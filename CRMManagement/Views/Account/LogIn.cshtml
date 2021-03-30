@@ -1,0 +1,166 @@
+﻿<!-- REFERENCES -->
+@using CRMManagement.Pages;
+@using CRMManagement.Infrastructure;
+@using CRMManagement.Entities.V1;
+
+@model Users
+@{
+    ViewBag.Title = "CRMManagement";
+    Layout = null;
+    string userName = string.Empty;
+    string password = string.Empty;
+}
+<!doctype html>
+<html>
+
+<!-- BEGIN HEADER -->
+
+<head>
+    <meta charset="utf-8">
+    <title>Login | CRMManagement</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet" type="text/css" />
+    @*<link rel="shortcut icon" href="~/images/favicon.png" />*@
+
+    @Styles.Render("~/Styles/globalstyles")
+
+    @Styles.Render("~/Styles/pluginsstyles")
+
+    @Styles.Render("~/Styles/themestyles")
+
+    <link href="~/Styles/login.min.css" rel="stylesheet" type="text/css" />
+
+    @Scripts.Render("~/bundles/corepulgins")
+</head>
+
+<!-- END HEADER -->
+<!-- BEGIN BODY -->
+
+<body class=" login">
+    <!-- BEGIN LOGO -->
+    <div class="logo" style="margin: 10px auto 0;">
+        <a href="#">
+            <img src="/Images/CRMManagementLogo.png" alt="" width="220px" />
+        </a>
+    </div>
+    <!-- END LOGO -->
+    <!-- BEGIN LOGIN -->
+    <div class="content">
+        <!-- BEGIN LOGIN FORM -->
+        @using (Html.BeginForm(Actions.LogIn, Controllers.Account, new { Area = "" }, FormMethod.Post, new { id = "frmlogin", @class = "login-form" }))
+        {
+            @Html.AntiForgeryToken()
+            <h3 class="form-title font-green">Sign In</h3>
+            <div class="form-group">
+                <label class="control-label visible-ie8 visible-ie9">Username</label>
+                @Html.TextBoxFor(model => model.EmailAddress, new { @class = "form-control form-control-solid placeholder-no-fix", maxlength = 100, Value = userName, @placeholder = "Username" })
+            </div>
+            <div class="form-group">
+                <label class="control-label visible-ie8 visible-ie9">Password</label>
+                @Html.TextBoxFor(model => model.Password, new { @class = "form-control form-control-solid placeholder-no-fix", maxlength = 200, @placeholder = "Password", Value = password, @type = "Password" })
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn green uppercase">Login</button>
+            </div>
+        }
+    </div>
+    <div class="copyright"> @DateTime.Now.Year © CRMManagement <a href="#">Privacy Policy</a> . All rights reserved.</div>
+
+    <!-- PopUp -->
+    @Html.Raw(ViewBag.openPopup)
+
+    <!-- BEGIN PAGE LEVEL PLUGINS -->
+    @Scripts.Render("~/bundles/jqval")
+    <!-- END PAGE LEVEL PLUGINS -->
+
+    @Scripts.Render("~/bundles/toaster")
+
+    @Scripts.Render("~/bundles/commonscripts")
+    <!-- BEGIN THEME GLOBAL SCRIPTS -->
+    @Scripts.Render("~/bundles/globalscripts")
+    <!-- END THEME GLOBAL SCRIPTS -->
+    <!-- SCRIPT AND FORM VALIDATION -->
+    <script>
+
+        jQuery(document).ready(function () {
+            Login.init();
+        });
+
+        //Model TimeOut
+        $(function () {
+            setTimeout(function () {
+                $(':input:enabled:visible:first').focus();
+                $('.modal.fade').off('shown.bs.modal').on('shown.bs.modal', function () {
+                    $(this).find('input:enabled:visible:first').focus();
+                });
+            }, 200);
+        });
+
+        //Validation Login
+        var Login = function () {
+            var handleLogin = function () {
+
+                $('#frmlogin').validate({
+                    errorElement: 'span', //default input error message container
+                    errorClass: 'help-block', // default input error message class
+                    focusInvalid: false, // do not focus the last invalid input
+                    rules: {
+                        EmailAddress: {
+                            required: true
+                        },
+                        Password: {
+                            required: true
+                        }
+                    },
+
+                    invalidHandler: function (event, validator) { //display error alert on form submit
+                    },
+
+                    highlight: function (element) { // hightlight error inputs
+                        $(element)
+                            .closest('.form-group').addClass('has-error'); // set error class to the control group
+                    },
+
+                    success: function (label) {
+                        label.closest('.form-group').removeClass('has-error');
+                        label.remove();
+                    },
+
+                    errorPlacement: function (error, element) {
+                        if (element.closest('.input-icon').size() === 1) {
+                            error.insertAfter(element.closest('.input-icon'));
+                        } else {
+                            error.insertAfter(element);
+                        }
+                    },
+
+                    submitHandler: function (form) {
+                        form.submit(); // form validation success, call ajax form submit
+                    }
+                });
+
+                $('#frmlogin input').keypress(function (e) {
+                    if (e.which == 13) {
+
+                        if ($('#frmlogin').validate().form()) {
+                            $('#frmlogin').submit(); //form validation success, call ajax form submit
+                        }
+                        return false;
+                    }
+                });
+            }
+
+            return {
+                init: function () {
+                    handleLogin();
+                }
+            };
+
+        }();
+        
+    </script>
+</body>
+
+<!-- END BODY -->
+</html>

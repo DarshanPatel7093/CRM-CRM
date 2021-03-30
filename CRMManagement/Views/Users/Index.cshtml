@@ -1,0 +1,203 @@
+﻿@using CRMManagement.Common;
+@using CRMManagement.Pages;
+@using CRMManagement.Infrastructure;
+@using CRMManagement.Entities.Contract;
+@Html.AntiForgeryToken()
+@model AbstractUsers
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@if (ProjectSession.AdminRoleID == 1)
+{
+    <div class="page-content-wrapper right-side d-flex flex-column">
+        <!-- BEGIN CONTENT BODY -->
+        <div class="custom_overlay"></div>
+        <div class="page-content container-fluid pb-5 rightfix rightscroll">
+            <!-- BEGIN PAGE BREADCRUMB -->
+            <div class="portlet-title" style="margin-bottom:20px;">
+                <div class="caption font-dark">
+                    <span class="caption-subject bold uppercase" style="font-size:14px">  @Html.ActionLink("Dashboard", "Index", "Dashboard") / Users</span>
+                </div>
+                <div class="tools"></div>
+            </div>
+            <div class="tab-pane active" id="tab_1_1_1">
+                <div class="row">
+                    <div class="col-md-12">
+                        <!-- BEGIN EXAMPLE TABLE PORTLET-->
+                        <div class="portlet light bordered">
+                            <div class="form-body row mt-2">
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="col-md-3 col-sm-12" style=";margin-top:5px;">
+                                            @Html.DropDownListFor(model => model.RoleId, (IEnumerable<SelectListItem>)ViewBag.Roles, "Select Role", new { @class = "mt-multiselect form-control select-cus", data_width = "100%", data_filter = "true", data_action_onchange = "true", data_height = "300" })
+                                        </div>
+                                        <div class="col-md-3 col-sm-12 " style="text-align:right;margin-top:5px;">
+                                            <button type="button" class="btn green si ri" onclick="TableDatatablesColreorder.init();">Filter</button>
+                                            <button type="button" class="btn default si ri" onclick="clearfilter();" style="background-color:lightgray;">Clear</button>
+                                        </div>
+                                        <div class="col-md-6 col-sm-12 " style="text-align:right;margin-top:5px;">
+                                            <button type="button" style="margin-left:5px;float:right" class="btn btn-primary mar si" onclick="AddUsers();">Add</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @*<ul class="page-breadcrumb breadcrumb bread mt-4" style="margin-top:10px;">
+                                <li>
+                                    <span class="active" style="font-weight:bold;color:#337ab7" href="#">Users Data</span>
+                                </li>
+                            </ul>*@
+                            <div class="portlet-body mt-3" id="divUsersTable" style="margin-top:40px">
+                                <table class="table table-striped table-bordered table-hover" id="UsersTable"></table>
+                            </div>
+                        </div>
+                        <!-- END EXAMPLE TABLE PORTLET-->
+                    </div>
+                </div>
+                <!-- END PAGE BASE CONTENT -->
+            </div>
+            <!-- END PAGE BASE CONTENT -->
+        </div>
+        <!-- END CONTENT BODY -->
+    </div>
+}
+
+<script type="text/javascript">
+
+    jQuery(document).ready(function () {
+        TableDatatablesColreorder.init();
+    });
+
+    function clearfilter() {
+        window.location.reload();
+    }
+    var TableDatatablesColreorder = function () {
+
+        var initTable1 = function () {
+            var table = $('#UsersTable');
+
+            var oTable = table.dataTable({
+                "stateSave": true,
+                "autoWidth": false,
+                "paging": true,
+                "scrollx": true,
+                // Internationalisation. For more info refer to http://datatables.net/manual/i18n
+                "language": {
+                    "aria": {
+                        "sortAscending": ": activate to sort column ascending",
+                        "sortDescending": ": activate to sort column descending"
+                    },
+                    "emptyTable": "No Data Found",
+                    "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+                    "infoEmpty": "No entries found",
+                    "infoFiltered": "(filtered1 from _MAX_ total entries)",
+                    "lengthMenu": "_MENU_ entries",
+                    "search": "Search:",
+                    "zeroRecords": "No matching records found"
+                },
+                "pageLength": 10,
+                "processing": true,
+                "serverSide": true,
+                "ajax": {
+                    async: true,
+                    url: '@Url.Action(Actions.BindUsers, Controllers.Users, new { area =""})',
+                    type: "post",
+                    data: BuildSearchCriteria()
+                },
+                "columns": [
+                    { "title": "Name", "data": "Name", "orderable": true },
+                    { "title": "Email", "data": "EmailAddress", "orderable": true },
+                    { "title": "Role Name", "data": "RoleName", "orderable": true },
+                    {
+                        "title": "Action",
+                        "data": null,
+                        "render": function (data, type, row) {
+                            var Id = btoa(row["Id"]);
+                            var appendstring = '';
+                            var url = "@Url.Action(Actions.Manage, Controllers.Users, new { Area = ""})";
+                            appendstring += '<a  href="' + url + "?Id=" + Id + '" title="Edit"  > <img src="@Url.Content("~/Styles/img/edit.png")" alt="Edit" /></a>&nbsp; ';
+                            appendstring += '<a  href="javascript:void(0);" onclick="Delete(' + row["Id"] + ')" title="Delete"  > <img src="@Url.Content("~/Styles/img/delete.png")" alt="Delete" /></a> ';
+                            return appendstring;
+                        },
+                        "orderable": false,
+                        "class": "action-icons"
+                    }
+                ],
+                // setup buttons extentension: http://datatables.net/extensions/buttons/
+                "buttons": [],
+
+                // setup responsive extension: http://datatables.net/extensions/responsive/
+                responsive: true,
+
+                "lengthMenu": [
+                    [5, 10, 15, 20, 50, 100],
+                    [5, 10, 15, 20, 50, 100]// change per page values here
+                ],
+                "dom": "<'row' <'col-md-12'B>><'row'<'col-md-6 col-sm-12'l><'col-md-6 col-sm-12'f>r><'table-scrollable't><'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>", // horizobtal scrollable datatable
+            });
+        }
+
+        return {
+
+            //main function to initiate the module
+            init: function () {
+                if ($.fn.DataTable.isDataTable("#UsersTable")) {
+                    $('#UsersTable').dataTable().fnDestroy();
+                    $('#UsersTable').html('<table class="table table-striped" width="100%" id="UsersTable"></table>');
+                }
+                initTable1();
+            }
+
+        };
+
+    }();
+
+
+    function AddUsers(Id) {
+        var url = "@Url.Action(Actions.Manage, Controllers.Users )"
+        window.location.href = url ;
+    }
+
+    function BuildSearchCriteria() {
+        try {
+            var param = {};
+            param["RoleId"] = $("#RoleId").val();
+            return addRequestVerificationToken(param);
+        }
+        catch (e) { }
+    }
+
+    function onSuccess(responseText, statusText, xhr, $form) {
+        if (responseText[0] == 0) {
+            ShowMessageToastr(responseText[1], responseText[2], false);
+            TableDatatablesColreorder.init();
+        }
+        else {
+            ShowMessageToastr(responseText[1], responseText[2], false);
+        }
+    }
+
+      function Delete(Id) {
+        $('.toast').remove();
+        ShowMessageToastr('@Enums.MessageType.info', 'are you sure this record delete ?', true, 'ConfirmDelete("' + Id + '")', "");
+    }
+
+    function ConfirmDelete(Id) {
+        loaderon();
+         $.ajax({
+            url: '@Url.Action(Actions.UserDelete, Controllers.Users )',
+            data: { Id : Id },
+            type: 'Post',
+            datatype: 'json',
+             success: function (result) {
+                 window.location.reload();
+             },
+             error: function (result){
+                 window.location.reload();
+             }
+        });
+    }
+
+
+</script>
+

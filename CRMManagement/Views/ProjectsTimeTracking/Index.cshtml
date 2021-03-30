@@ -1,0 +1,269 @@
+﻿@using CRMManagement.Common;
+@using CRMManagement.Pages;
+@using CRMManagement.Infrastructure;
+@using CRMManagement.Entities.Contract;
+@Html.AntiForgeryToken()
+@model AbstractProjectsTimeTracking
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="page-content-wrapper right-side d-flex flex-column">
+    <!-- BEGIN CONTENT BODY -->
+    <div class="custom_overlay"></div>
+    <div class="page-content container-fluid pb-5 rightfix rightscroll">
+        <!-- BEGIN PAGE BREADCRUMB -->
+        <div class="portlet-title" style="margin-bottom:20px;">
+            <div class="caption font-dark">
+                <span class="caption-subject bold uppercase" style="font-size:14px">  @Html.ActionLink("Dashboard", "Index", "Dashboard") / Projects Time Tracking</span>
+            </div>
+            <div class="tools"></div>
+        </div>
+        <div class="tab-pane active" id="tab_1_1_1">
+            <div class="row">
+                <div class="col-md-12">
+                    <!-- BEGIN EXAMPLE TABLE PORTLET-->
+                    <div class="portlet light bordered">
+                        <div class="form-body row mt-2">
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-2 col-sm-12" style=";margin-top:5px;">
+                                        @Html.DropDownListFor(model => model.ProjectId, (IEnumerable<SelectListItem>)ViewBag.Project, "Select Project", new { @class = "mt-multiselect form-control select-cus", data_width = "100%", data_filter = "true", data_action_onchange = "true", data_height = "300" })
+                                    </div>
+                                    <div class="col-md-2 col-sm-12" style=";margin-top:5px;">
+                                        @Html.DropDownListFor(model => model.AssignedUserId, (IEnumerable<SelectListItem>)ViewBag.Users, "Select Users", new { @class = "mt-multiselect form-control select-cus", data_width = "100%", data_filter = "true", data_action_onchange = "true", data_height = "300" })
+                                    </div>
+                                    <div class="col-md-2 col-sm-12" style="margin-top:5px;">
+                                        <select class="form-control" name="DateType" id="DateType">
+                                            <option value="1">Start Date</option>
+                                            <option value="2">End Date</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2 col-sm-12" style="margin-top:5px;">
+                                        @Html.TextBox("StartDate", null, new { @id = "StartDate", @class = "form-control form-control-solid placeholder-no-fix", @placeholder = "Select Start Date", @autocomplete = "off" })
+                                    </div>
+                                    <div class="col-md-2 col-sm-12" style="margin-top:5px;">
+                                        @Html.TextBox("EndDate", null, new { @id = "EndDate", @class = "form-control form-control-solid placeholder-no-fix", @placeholder = "Select End Date", @autocomplete = "off" })
+                                    </div>
+                                    <div class="col-md-2 col-sm-12 " style="text-align:right;margin-top:5px;">
+                                        <button type="button" class="btn green si ri" onclick="TableDatatablesColreorder.init();">Filter</button>
+                                        <button type="button" class="btn default si ri" onclick="clearfilter();" style="background-color:lightgray;">Clear</button>
+                                    </div>
+                                    @if (ProjectSession.AdminRoleID != 3)
+                                    {
+                                        <div class="col-md-12 col-sm-12 " style="text-align:right;margin-top:5px;">
+                                            <button type="button" style="margin-left:5px;float:right" class="btn btn-primary mar si" onclick="AddProjects();">Add</button>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        @*<ul class="page-breadcrumb breadcrumb bread mt-4" style="margin-top:10px;">
+                            <li>
+                                <span class="active" style="font-weight:bold;color:#337ab7" href="#">Project TimeTracking Data</span>
+                            </li>
+                        </ul>*@
+                        <div class="portlet-body mt-3" id="divUsersTable" style="margin-top:40px">
+                            <table class="table table-striped table-bordered table-hover" id="UsersTable"></table>
+                        </div>
+                    </div>
+                    <!-- END EXAMPLE TABLE PORTLET-->
+                </div>
+            </div>
+            <!-- END PAGE BASE CONTENT -->
+        </div>
+        <!-- END PAGE BASE CONTENT -->
+    </div>
+    <!-- END CONTENT BODY -->
+</div>
+
+<script type="text/javascript">
+
+    jQuery(document).ready(function () {
+        $('#StartDate').datetimepicker({
+            useCurrent: false, //Important! See issue #1075
+            format: 'DD/MM/YYYY',
+            defaultDate: new Date()
+        });
+        $('#EndDate').datetimepicker({
+            useCurrent: false, //Important! See issue #1075
+            format: 'DD/MM/YYYY',
+            defaultDate: new Date()
+        });
+        $("#StartDate").on("dp.change", function (e) {
+            $('#EndDate').data("DateTimePicker").minDate(e.date);
+        });
+        $("#EndDate").on("dp.change", function (e) {
+            $('#StartDate').data("DateTimePicker").maxDate(e.date);
+        });
+
+         if (@ProjectSession.ProjectsTimeProjectId > 0) {
+             $("#ProjectId").val(@ProjectSession.ProjectsTimeProjectId);
+        }
+        if (@ProjectSession.ProjectsTimeAssignedUserId > 0) {
+            $("#AssignedUserId").val(@ProjectSession.ProjectsTimeAssignedUserId);
+        }
+        if (@ProjectSession.ProjectsTimeDateType > 0) {
+            $("#DateType").val(@ProjectSession.ProjectsTimeDateType);
+        }
+        if ("@ProjectSession.ProjectsTimeStartDate" != "") {
+            $("#StartDate").val("@ProjectSession.ProjectsTimeStartDate");
+        }
+        if ("@ProjectSession.ProjectsTimeEndDate" != "") {
+            $("#EndDate").val("@ProjectSession.ProjectsTimeEndDate");
+        }
+
+        TableDatatablesColreorder.init();
+    });
+
+    function clearfilter() {
+        $("#ProjectId").val("");
+        $('#ProjectId').multiselect('rebuild');
+        $("#AssignedUserId").val("");
+        $('#AssignedUserId').multiselect('rebuild');
+        $("#StartDate").val("");
+        $("#EndDate").val("");
+        $("#DateType").val(1);
+        TableDatatablesColreorder.init();
+    }
+    var TableDatatablesColreorder = function () {
+
+        var initTable1 = function () {
+            var table = $('#UsersTable');
+
+            var oTable = table.dataTable({
+                "stateSave": true,
+                "autoWidth": false,
+                "paging": true,
+                "scrollx": true,
+                // Internationalisation. For more info refer to http://datatables.net/manual/i18n
+                "language": {
+                    "aria": {
+                        "sortAscending": ": activate to sort column ascending",
+                        "sortDescending": ": activate to sort column descending"
+                    },
+                    "emptyTable": "No Data Found",
+                    "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+                    "infoEmpty": "No entries found",
+                    "infoFiltered": "(filtered1 from _MAX_ total entries)",
+                    "lengthMenu": "_MENU_ entries",
+                    "search": "Search:",
+                    "zeroRecords": "No matching records found"
+                },
+                "pageLength": 10,
+                "processing": true,
+                "serverSide": true,
+                "ajax": {
+                    async: true,
+                    url: '@Url.Action(Actions.BindProjectsTimeTracking, Controllers.ProjectsTimeTracking, new { area =""})',
+                    type: "post",
+                    data: BuildSearchCriteria()
+                },
+                "columns": [
+                    { "title": "Project", "data": "ProjectName", "orderable": true },
+                    { "title": "Assigned User", "data": "UserName", "orderable": true },
+                    { "title": "Work Description", "data": "WorkDescription", "orderable": true },
+                    { "title": "Work Done", "data": "WorkDone", "orderable": true },
+                    { "title": "Start Date", "data": "StartDate", "orderable": true },
+                    { "title": "End Date", "data": "EndDate", "orderable": true },
+                    { "title": "Total Hrs", "data": "TotalHrs", "orderable": true },
+                    {
+                        "title": "Action",
+                        "data": null,
+                        "render": function (data, type, row) {
+                            var Id = btoa(row["Id"]);
+                            var appendstring = '';
+                            var url = "@Url.Action(Actions.Manage, Controllers.ProjectsTimeTracking, new { Area = ""})";
+                            var url1 = "@Url.Action(Actions.SendEmail, Controllers.ProjectsTimeTracking, new { Area = ""})";
+                            if ('@ProjectSession.AdminRoleID' != "3") {
+                                appendstring += '<a href="' + url + "?Id=" + Id + '" title="Edit"  > <img src="@Url.Content("~/Styles/img/edit.png")" alt="Edit" /></a>&nbsp; ';
+                                appendstring += '<a  href="javascript:void(0);" onclick="Delete(' + row["Id"] + ')" title="Delete"  > <img src="@Url.Content("~/Styles/img/delete.png")" alt="Delete" /></a> ';
+                                appendstring += '<a  href="' + url1 + "?Id=" + Id + '" title="Email"  > <span class="fa fa-envelope"></span></a>&nbsp; ';
+                            }
+                            return appendstring;
+                        },
+                        "orderable": false,
+                        "class": "action-icons"
+                    }
+                ],
+                // setup buttons extentension: http://datatables.net/extensions/buttons/
+                "buttons": [],
+
+                // setup responsive extension: http://datatables.net/extensions/responsive/
+                responsive: true,
+
+                "lengthMenu": [
+                    [5, 10, 15, 20, 50, 100],
+                    [5, 10, 15, 20, 50, 100]// change per page values here
+                ],
+                "dom": "<'row' <'col-md-12'B>><'row'<'col-md-6 col-sm-12'l><'col-md-6 col-sm-12'f>r><'table-scrollable't><'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>", // horizobtal scrollable datatable
+            });
+        }
+
+        return {
+
+            //main function to initiate the module
+            init: function () {
+                if ($.fn.DataTable.isDataTable("#UsersTable")) {
+                    $('#UsersTable').dataTable().fnDestroy();
+                    $('#UsersTable').html('<table class="table table-striped" width="100%" id="UsersTable"></table>');
+                }
+                initTable1();
+            }
+
+        };
+
+    }();
+
+
+    function AddProjects(Id) {
+        var url = "@Url.Action(Actions.Manage, Controllers.ProjectsTimeTracking)"
+        window.location.href = url ;
+    }
+
+    function BuildSearchCriteria() {
+        try {
+            var param = {};
+            param["ProjectId"] = $("#ProjectId").val();
+            param["AssignedUserId"] = $("#AssignedUserId").val();
+            param["StartDate"] = $("#StartDate").val();
+            param["EndDate"] = $("#EndDate").val();
+            param["DateType"] = $("#DateType").val();
+            return addRequestVerificationToken(param);
+        }
+        catch (e) { }
+    }
+
+    function onSuccess(responseText, statusText, xhr, $form) {
+        if (responseText[0] == 0) {
+            ShowMessageToastr(responseText[1], responseText[2], false);
+            TableDatatablesColreorder.init();
+        }
+        else {
+            ShowMessageToastr(responseText[1], responseText[2], false);
+        }
+    }
+
+    function Delete(Id) {
+        $('.toast').remove();
+        ShowMessageToastr('@Enums.MessageType.info', 'are you sure this record delete ?', true, 'ConfirmDelete("' + Id + '")', "");
+    }
+
+    function ConfirmDelete(Id) {
+        loaderon();
+         $.ajax({
+            url: '@Url.Action(Actions.ProjectTimeTrackingDelete, Controllers.ProjectsTimeTracking )',
+            data: { Id : Id },
+            type: 'Post',
+            datatype: 'json',
+             success: function (result) {
+                 window.location.reload();
+             },
+             error: function (result){
+                 window.location.reload();
+             }
+        });
+    }
+
+</script>
+

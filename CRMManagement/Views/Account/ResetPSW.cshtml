@@ -1,0 +1,197 @@
+﻿<!-- REFERENCES -->
+
+@using CRMManagement.Pages;
+@using CRMManagement.Infrastructure;
+@using CRMManagement.Entities.V1;
+
+@model User
+@{
+    ViewBag.Title = "CRMManagement";
+    Layout = null;
+    string userName = string.Empty;
+    string password = string.Empty;
+
+    if (Request.Cookies["AdminUserLogin"] != null)
+    {
+        userName = Convert.ToString(Request.Cookies["AdminUserLogin"].Values["UserName"]);
+        password = Convert.ToString(Request.Cookies["AdminUserLogin"].Values["Password"]);
+    }
+}
+
+<!doctype html>
+<html>
+
+<!-- BEGIN HEADER -->
+
+<head>
+    <meta charset="utf-8">
+    <title>Login | CRMManagement</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="~/images/favicon.png" />
+
+    @Styles.Render("~/Styles/globalstyles")
+
+    @Styles.Render("~/Styles/pluginsstyles")
+
+    @Styles.Render("~/Styles/themestyles")
+
+    <link href="~/Styles/login.min.css" rel="stylesheet" type="text/css" />
+
+    @Scripts.Render("~/bundles/corepulgins")
+</head>
+
+<!-- END HEADER -->
+<!-- BEGIN BODY -->
+
+<body class=" login">
+    <!-- BEGIN LOGO -->
+    <div class="logo">
+        <a href="#">
+            <img src="../assets/pages/img/logo-big.png" alt="" />
+        </a>
+    </div>
+    <div class="content">
+        <!-- BEGIN LOGIN FORM -->
+        @using (Html.BeginForm(Actions.AdminUserResetPassword, Controllers.Account, new { Area = "", id = @ViewBag.userid }, FormMethod.Post, new { id = "frmReset" }))
+        {
+            @Html.AntiForgeryToken()
+            <h3 class="form-title font-green">Reset Password</h3>
+            <div class="form-group">
+                <label class="control-label visible-ie8 visible-ie9">Password</label>
+                @Html.TextBoxFor(model => model.Password, new { @class = "form-control form-control-solid placeholder-no-fix", @id = "Password", maxlength = 200, @placeholder = "Password", @type = "Password" })
+            </div>
+            <div class="form-group">
+                <label class="control-label visible-ie8 visible-ie9">Confirm Password</label>
+                @Html.TextBoxFor(model => model.ConfirmPassword, new { @class = "form-control form-control-solid placeholder-no-fix", @id = "ReTypePassword", maxlength = 200, @placeholder = "Confirm Password", @type = "Password" })
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn green uppercase">Submit</button>
+                <div style="display:none" id="pwd"><p style="color:red">Passwords does't match</p></div>
+            </div>
+        }
+
+    </div>
+    @Scripts.Render("~/bundles/jqval")
+    <!-- END PAGE LEVEL PLUGINS -->
+
+    @Scripts.Render("~/bundles/toaster")
+
+    @Scripts.Render("~/bundles/commonscripts")
+    <!-- BEGIN THEME GLOBAL SCRIPTS -->
+    @Scripts.Render("~/bundles/globalscripts")
+    <!-- END THEME GLOBAL SCRIPTS -->
+    <!-- SCRIPT AND FORM VALIDATION -->
+    <script>
+
+        jQuery(document).ready(function () {
+
+            //Initialise Validation Variable
+            Resetpassword.init();
+        });
+
+        //Model TimeOut
+        $(function () {
+            setTimeout(function () {
+                $(':input:enabled:visible:first').focus();
+                $('.modal.fade').off('shown.bs.modal').on('shown.bs.modal', function () {
+                    $(this).find('input:enabled:visible:first').focus();
+                });
+            }, 200);
+        });
+
+        //Validation Resetpassword
+
+        var Resetpassword = function () {
+            var handleResetpassword = function () {
+
+                $('#frmReset').validate({
+                    errorElement: 'span', //default input error message container
+                    errorClass: 'help-block', // default input error message class
+                    focusInvalid: false, // do not focus the last invalid input
+                    rules: {
+                        Password: {
+                            required: true,
+                        },
+                        ConfirmPassword: {
+                            required: true
+                        }
+                    },
+
+                    invalidHandler: function (event, validator) { //display error alert on form submit
+                    },
+
+                    highlight: function (element) { // hightlight error inputs
+                        $(element)
+                            .closest('.form-group').addClass('has-error'); // set error class to the control group
+                    },
+
+                    success: function (label) {
+                        label.closest('.form-group').removeClass('has-error');
+                        label.remove();
+                    },
+
+                    errorPlacement: function (error, element) {
+                        if (element.closest('.input-icon').size() === 1) {
+                            error.insertAfter(element.closest('.input-icon'));
+                        } else {
+                            error.insertAfter(element);
+                        }
+                    },
+
+                    submitHandler: function (form) {
+                        form.submit(); // form validation success, call ajax form submit
+                    }
+                });
+
+                $('#frmReset input').keypress(function (e) {
+                    if (e.which == 13) {
+
+                        if ($('#frmReset').validate().form()) {
+                            $('#frmReset').submit(); //form validation success, call ajax form submit
+                        }
+                        return false;
+                    }
+                });
+            }
+
+            return {
+                init: function () {
+                    handleResetpassword();
+                }
+            };
+
+        }();
+
+        $('input').blur(function () {
+            var pass = $('#Password').val();
+            var repass = $('#ReTypePassword').val();
+            if (($('#Password').val().length == 0) || ($('#ReTypePassword').val().length == 0)) {
+                $('#Password').css("border-color", "red");
+                $(':input[type="submit"]').prop('disabled', true);
+            }
+            else if (pass != repass) {
+                $('#Password').css("border-color", "red");
+                $('#ReTypePassword').css("border-color", "red");
+                $('#pwd').css("display", "block");
+                $(':input[type="submit"]').prop('disabled', true);
+            }
+            else {
+                $('#Password').css("border-color", "#999999");
+                $('#ReTypePassword').css("border-color", "#999999");
+                $('#pwd').css("display", "none");
+                $(':input[type="submit"]').prop('disabled', false);
+            }
+        });
+    </script>
+
+    @Html.Raw(ViewBag.openPopup)
+
+</body>
+
+<!-- END BODY -->
+</html>
+
+
+

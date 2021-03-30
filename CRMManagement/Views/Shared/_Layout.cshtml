@@ -1,0 +1,308 @@
+﻿@using CRMManagement.Common;
+@using CRMManagement.Pages;
+@using System.Web.Optimization;
+@{
+    /**/
+
+    var curController = Convert.ToString(ViewContext.RouteData.Values["Controller"]);
+    var curAction = Convert.ToString(ViewContext.RouteData.Values["Actions"]);
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title> @ViewBag.Title | CRMManagement</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <meta content="Preview page of Metronic Admin Theme #1 for blank page layout" name="description" />
+    <meta content="" name="author" />
+
+    <!-- BEGIN GLOBAL MANDATORY STYLES -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet" type="text/css" />
+    @Styles.Render("~/Styles/globalstyles")
+    <!-- END GLOBAL MANDATORY STYLES -->
+    <!-- BEGIN PAGE LEVEL PLUGINS -->
+    @Styles.Render("~/Styles/pluginsstyles")
+    <!-- END PAGE LEVEL PLUGINS -->
+    <!-- BEGIN THEME GLOBAL STYLES -->
+    @Styles.Render("~/Styles/themestyles")
+    <!-- END THEME GLOBAL STYLES -->
+    <!-- BEGIN THEME LAYOUT STYLES -->
+    @Styles.Render("~/Styles/layoutstyles")
+    <!-- END THEME LAYOUT STYLES -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <!-- BEGIN CORE PLUGINS -->
+    @Scripts.Render("~/bundles/corepulgins")
+    <!-- END CORE PLUGINS -->
+    @*<script src="~/Scripts/ckeditor/ckeditor.js"></script>*@
+
+    <style>
+        .lbl {
+            text-align: center;
+        }
+
+        .colSize {
+            width: 100px
+        }
+
+        .action-icons a:hover {
+            text-decoration: none !important;
+        }
+
+        #overlay {
+            position: fixed;
+            display: none;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 999999999;
+            cursor: pointer;
+        }
+
+        #overlayloader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            color: white;
+            transform: translate(-50%,-50%);
+            -ms-transform: translate(-50%,-50%);
+        }
+
+        .loading-message {
+            display: inline-block;
+            padding: 10px;
+            margin: 0 auto;
+            color: #000 !important;
+            font-size: 13px;
+            font-weight: 400;
+            text-align: center;
+        }
+
+        .loading-message, .page-loading {
+            min-width: 125px;
+            vertical-align: middle;
+        }
+
+        .block-spinner-bar {
+            display: inline-block;
+            width: 80px;
+            text-align: center;
+        }
+
+            .block-spinner-bar .bounce1 {
+                -webkit-animation-delay: -.32s;
+                animation-delay: -.32s;
+            }
+
+            .block-spinner-bar > div {
+                margin: 0 2px;
+                width: 15px;
+                height: 15px;
+                display: inline-block;
+                -webkit-animation: bounceDelay 1.4s infinite ease-in-out;
+                animation: bounceDelay 1.4s infinite ease-in-out;
+                -webkit-animation-fill-mode: both;
+                animation-fill-mode: both;
+            }
+
+            .block-spinner-bar > div, .page-spinner-bar > div {
+                background: #eee;
+                border-radius: 100% !important;
+            }
+
+            .page-spinner-bar > div, .block-spinner-bar > div {
+                background: #6fa7d7;
+            }
+
+            .block-spinner-bar .bounce2 {
+                -webkit-animation-delay: -.16s;
+                animation-delay: -.16s;
+            }
+
+        .btn-group > .dropdown-menu {
+            opacity: 1;
+            filter: alpha(opacity=0);
+            margin-top: 0;
+        }
+
+        .multiselect-clear-filter {
+            display: none;
+        }
+
+        label.radio {
+            text-align: inherit !important;
+        }
+
+        .btn-group {
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="page-header-fixed page-sidebar-closed-hide-logo page-content-white page-md">
+    <div class="page-wrapper">
+        <!-- BEGIN HEADER -->
+        <div class="page-header navbar navbar-fixed-top">
+            <!-- BEGIN HEADER INNER -->
+            <div class="page-header-inner ">
+                <!-- BEGIN LOGO -->
+                <div class="page-logo">
+                    <a href="#">
+                        <img src="~/Images/CRMLogo.png" alt="logo" class="logo-default" style="margin-top : 5px; width :150px; height:40px" />
+                    </a>
+                    <div class="menu-toggler sidebar-toggler">
+                        <span></span>
+                    </div>
+                </div>
+                <a href="javascript:;" id="sm-menu" class="menu-toggler responsive-toggler" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span></span>
+                </a>
+                <div class="top-menu">
+                    <ul class="nav navbar-nav pull-right"></ul>
+                </div>
+            </div>
+        </div>
+        <div id="overlay">
+            <div class="loading-message " id="overlayloader">
+                <div class="block-spinner-bar">
+                    <div class="bounce1"></div>
+                    <div class="bounce2"></div>
+                    <div class="bounce3"></div>
+                </div>
+            </div>
+        </div>
+        <div class="clearfix"> </div>
+        <div class="page-container">
+            <div class="page-sidebar-wrapper">
+                <div class="page-sidebar navbar-collapse collapse" id="add-menu">
+                    @Html.Partial("_LeftMenu")
+                </div>
+            </div>
+
+            @RenderBody()
+        </div>
+        <div class="page-footer">
+            <div class="page-footer-inner">
+                @DateTime.Now.Year &copy; CRMManagement
+                <a href="#">Privacy Policy</a> &nbsp;|&nbsp; All rights reserved.
+            </div>
+            <div class="scroll-to-top">
+                <i class="icon-arrow-up"></i>
+            </div>
+        </div>
+        <!-- END FOOTER -->
+    </div>
+    <div class="quick-nav-overlay"></div>
+    <!-- BEGIN PAGE LEVEL PLUGINS -->
+    @Scripts.Render("~/bundles/pluginsscripts")
+    <!-- END PAGE LEVEL PLUGINS -->
+    <!-- BEGIN THEME GLOBAL SCRIPTS -->
+    @Scripts.Render("~/bundles/globalscripts")
+    <!-- END THEME GLOBAL SCRIPTS -->
+    <!-- BEGIN PAGE LEVEL SCRIPTS -->
+    @Scripts.Render("~/bundles/pagescripts")
+
+    @Scripts.Render("~/bundles/jqval")
+
+    @Scripts.Render("~/bundles/toaster")
+    <!-- END PAGE LEVEL SCRIPTS -->
+    <!-- BEGIN THEME LAYOUT SCRIPTS -->
+    @Scripts.Render("~/bundles/layoutscripts")
+    <!-- END THEME LAYOUT SCRIPTS -->
+    <!-- BEGIN COMMON SCRIPTS -->
+    @Scripts.Render("~/bundles/commonscripts")
+    <!-- END COMMON SCRIPTS -->
+    <script>
+        $(document).ready(function () {
+            setSelectedMenu();
+            $('#clickmewow').click(function () {
+                $('#radio1003').attr('checked', 'checked');
+            });
+        });
+
+        $("#sm-menu").click(function () {
+            $("#add-menu").toggleClass('in');
+        });
+
+        function setSelectedMenu() {
+            $(".page-sidebar-menu").find("li.active").each(function () {
+                $(this).removeClass("active");
+            });
+
+            switch ('@curController') {
+                case '@Controllers.Dashboard':
+                    setActiveLink($('#lnkMenuDashboard').attr('id'));
+                    break;
+                case '@Controllers.Users':
+                    setActiveLink($('#lnkUsers').attr('id'));
+                    break;
+                case '@Controllers.Opportunities':
+                    setActiveLink($('#lnkOpportunities').attr('id'));
+                    break;
+                case '@Controllers.Opportunities_Tasks':
+                    switch ('@curAction') {
+                        case '@Actions.Index':
+                            setActiveLink($('#lnkOpportunities_Tasks').attr('id'));
+                            break;
+                         case '@Actions.Manage':
+                            setActiveLink($('#lnkOpportunities_Tasks').attr('id'));
+                            break;
+                        case '@Actions.CallLogReport':
+                            setActiveLink($('#lnkCallLogReport').attr('id'));
+                            break;
+                    }
+                    break;
+                case '@Controllers.Company':
+                    setActiveLink($('#lnkCompany').attr('id'));
+                    break;
+                case '@Controllers.CompanyContacts':
+                    setActiveLink($('#lnkCompanyContacts').attr('id'));
+                    break;
+                case '@Controllers.Projects':
+                    setActiveLink($('#lnkProjects').attr('id'));
+                    break;
+                case '@Controllers.ProjectsTimeTracking':
+                    setActiveLink($('#lnkProjectTimeTracking').attr('id'));
+                    break;
+            }
+        }
+
+        function setActiveLink(menuId) {
+            $(".nav-itemmenu").find("a[id='" + menuId + "']").parent("li").addClass("active");
+            $(".nav-itemmenu").find("a[id='" + menuId + "']").parent("li").append("<span class='selected'></span>");
+        };
+
+        $('#commonModal').on('hide.bs.modal', function (e) {
+            $("#commonModelTitle").html('');
+            $("#commonModalBody").html('');
+            $("#commonModalFooter").html('');
+        });
+
+        function isEmpty(val) {
+            return (val === undefined || val == null || val.length <= 0) ? '' : val;
+        }
+
+          function loaderon() {
+            document.getElementById("overlay").style.display = "block";
+        }
+
+        function loaderoff() {
+            document.getElementById("overlay").style.display = "none";
+        }
+
+    </script>
+
+
+    @Html.Raw(ViewBag.openPopup)
+
+    @RenderSection("scripts", required: false)
+
+
+    </body>
+</html>

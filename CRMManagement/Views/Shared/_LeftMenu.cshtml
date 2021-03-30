@@ -1,0 +1,89 @@
+﻿@using CRMManagement.Common;
+@using CRMManagement.Pages;
+
+<ul class="page-sidebar-menu  page-header-fixed " data-keep-expanded="false" data-auto-scroll="true" data-slide-speed="200" style="padding-top: 20px">
+    <li class="sidebar-toggler-wrapper hide">
+        <div class="sidebar-toggler">
+            <span></span>
+        </div>
+    </li>
+    <li class="nav-itemmenu Dashboard">
+        <a href="@Url.Action(Actions.Index, Controllers.Dashboard, new { area = "" })" class="nav-link" id="lnkMenuDashboard">
+            <i class="icon-home"></i>
+            <span class="title">Dashboard</span>
+        </a>
+    </li>
+    @if (ProjectSession.AdminRoleID == 1)
+    {
+        <li class="nav-itemmenu Users">
+            <a href="@Url.Action(Actions.Index, Controllers.Users, new { area = "" })" class="nav-link" id="lnkUsers">
+                <i class="fa fa-user"></i>
+                <span class="title">Users</span>
+            </a>
+        </li>
+    }
+    <li class="nav-itemmenu Company">
+        <a href="@Url.Action(Actions.Index, Controllers.Company, new { area = "" })" class="nav-link" id="lnkCompany">
+            <i class="fa fa-building-o"></i>
+            <span class="title">Company</span>
+        </a>
+    </li>
+    <li class="nav-itemmenu CompanyContacts">
+        <a href="@Url.Action(Actions.Index, Controllers.CompanyContacts, new { area = "" })" class="nav-link" id="lnkCompanyContacts">
+            <i class="fa fa-building-o"></i>
+            <span class="title">Company Contacts</span>
+        </a>
+    </li>
+    <li class="nav-itemmenu Opportunities">
+        <a href="@Url.Action(Actions.Index, Controllers.Opportunities, new { area = "" })" class="nav-link" id="lnkOpportunities">
+            <i class="fa fa-tasks"></i>
+            <span class="title">Opportunities</span>
+        </a>
+    </li>
+    <li class="nav-itemmenu Opportunities_Tasks">
+        <a href="@Url.Action(Actions.Index, Controllers.Opportunities_Tasks, new { area = "" })" class="nav-link" id="lnkOpportunities_Tasks">
+            <i class="fa fa-tasks"></i>
+            <span class="title">Opportunities Tasks</span>
+        </a>
+    </li>
+
+    @if (ProjectSession.AdminRoleID != 2)
+    {
+        <li class="nav-itemmenu Projects">
+            <a href="@Url.Action(Actions.Index, Controllers.Projects, new { area = "" })" class="nav-link" id="lnkProjects">
+                <i class="fa fa-tasks"></i>
+                <span class="title">Projects</span>
+            </a>
+        </li>
+        <li class="nav-itemmenu ProjectTimeTracking">
+            <a href="@Url.Action(Actions.Index, Controllers.ProjectsTimeTracking, new { area = "" })" class="nav-link" id="lnkProjectTimeTracking">
+                <i class="fa fa-tasks"></i>
+                <span class="title">Project Time Tracking</span>
+            </a>
+        </li>
+    }
+    <li class="nav-itemmenu CallLogReport">
+        <a href="@Url.Action(Actions.CallLogReport, Controllers.Opportunities_Tasks, new { area = "" })" class="nav-link" id="lnkCallLogReport">
+            <i class="fa fa-tasks"></i>
+            <span class="title">Call Log Report</span>
+        </a>
+    </li>
+    <li class="nav-itemmenu Logout">
+        <a href="@Url.Action(Actions.Logout, Controllers.Account, new { area = "" })" class="nav-link" id="Logout">
+            <i class="fa fa-sign-out"></i>
+            <span class="title">Logout</span>
+        </a>
+    </li>
+</ul>
+
+<script type="text/javascript">
+    if ('@ProjectSession.IsOrganizationCount' == 'True') {
+        $(".nav-item").hide();
+    }
+    else {
+        $(".nav-item").show();
+    }
+
+
+</script>
+

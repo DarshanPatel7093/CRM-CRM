@@ -1,0 +1,693 @@
+﻿@using CRMManagement.Common;
+@using CRMManagement.Pages;
+@using CRMManagement.Infrastructure;
+@using CRMManagement.Entities.Contract;
+@Html.AntiForgeryToken()
+@model AbstractOpportunities_Tasks
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .nav-pills li a.active {
+        color: #fff;
+        background-color: #337ab7;
+        border-radius: 10px;
+    }
+    .control-label span {
+        color: red;
+    }
+</style>
+    <div class="page-content-wrapper right-side d-flex flex-column">
+        <div class="custom_overlay"></div>
+        <div class="page-content container-fluid pb-5 rightfix rightscroll">
+            <div class="portlet-title" style="margin-bottom:20px;">
+                <div class="caption font-dark" id="TaskBreadcrum">
+                    <span class="caption-subject bold uppercase" style="font-size:14px">  @Html.ActionLink("Dashboard", "Index", "Dashboard") / Opportunities Tasks</span>
+                </div><div class="caption font-dark" id="CallLogBreadcrum" style="display:none">
+                    <span class="caption-subject bold uppercase" style="font-size:14px">  @Html.ActionLink("Dashboard", "Index", "Dashboard") / <span id="CallLogBreadcrumbhtml"></span> Task's Call Log</span>
+                </div>
+                <div class="tools"></div>
+            </div>
+            <input type="hidden" id="TaskId" />
+            <div class="tab-pane active" id="tab_1_1_1">
+                <div class="row">
+                    <div class="col-md-12">
+                        <ul class="nav nav-pills">
+                            <li><a data-toggle="pill" id="TasksTab" href="#Tasks" class="active">Tasks</a></li>
+                            <li><a data-toggle="pill" id="CallLogTab" href="#CallLog">CallLog</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div id="Tasks" class="tab-pane fade in active">
+                                <div class="portlet light bordered">
+                                    <div class="form-body row mt-2">
+                                        <div class="col-md-12">
+                                            <div class="row">
+                                                <div class="col-md-2 col-sm-12" style="margin-top:5px;">
+                                                    @Html.DropDownListFor(model => model.OpportunityId, (IEnumerable<SelectListItem>)ViewBag.Opportunities, "Select Opportunities", new { @class = "mt-multiselect form-control select-cus", data_width = "100%", data_filter = "true", data_action_onchange = "true", data_height = "300" })
+                                                </div>
+                                                <div class="col-md-2 col-sm-12" style="margin-top:5px;">
+                                                    @Html.DropDownListFor(model => model.AssignedUserId, (IEnumerable<SelectListItem>)ViewBag.User, "Select Users", new { @class = "mt-multiselect form-control select-cus", data_width = "100%", data_filter = "true", data_action_onchange = "true", data_height = "300" })
+                                                </div>
+                                                <div class="col-md-2 col-sm-12" style="margin-top:5px;">
+                                                    @Html.DropDownListFor(model => model.StatusId, (IEnumerable<SelectListItem>)ViewBag.Status, "Select Status", new { @class = "mt-multiselect form-control select-cus", data_width = "100%", data_filter = "true", data_action_onchange = "true", data_height = "300" })
+                                                </div>
+                                                <div class="col-md-2 col-sm-12" style="margin-top:5px;">
+                                                    @Html.TextBox("StartDate", null, new { @id = "StartDate", @class = "form-control form-control-solid placeholder-no-fix", @placeholder = "Select Start Date", @autocomplete = "off" })
+                                                </div>
+                                                <div class="col-md-2 col-sm-12" style="margin-top:5px;">
+                                                    @Html.TextBox("EndDate", null, new { @id = "EndDate", @class = "form-control form-control-solid placeholder-no-fix", @placeholder = "Select End Date", @autocomplete = "off" })
+                                                </div>
+                                                <div class="col-md-2 col-sm-12 " style="text-align:right;margin-top:5px;">
+                                                    <button type="button" class="btn green si ri" onclick="TableDatatablesColreorder.init();">Filter</button>
+                                                    <button type="button" class="btn default si ri" onclick="clearfilter();" style="background-color:lightgray;">Clear</button>
+                                                </div>
+
+                                                <div class="col-sm-12 " style="text-align:right;margin-top:5px;">
+                                                    <button type="button" style="margin-left:5px;float:right" class="btn btn-primary mar si" onclick="AddOpportunities_Tasks();">Add</button>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @*<ul class="page-breadcrumb breadcrumb bread mt-4" style="margin-top:10px;">
+                                    <li>
+                                        <span class="active" style="font-weight:bold;color:#337ab7" href="#">Opportunities_Tasks Data</span>
+                                    </li>
+                                </ul>*@
+                                    <div class="portlet-body mt-3" id="divOpportunities_TasksTable" style="margin-top:40px">
+                                        <table class="table table-striped table-bordered table-hover" id="Opportunities_TasksTable"></table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="CallLog" class="tab-pane fade in">
+                                <div class="portlet light bordered">
+                                    <div class="form-body row mt-2">
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            @*<div class="col-md-2 col-sm-12" style="margin-top:5px;">
+            @Html.DropDownListFor(model => model.OpportunityId, (IEnumerable<SelectListItem>)ViewBag.Opportunities, "Select Opportunities", new { @class = "mt-multiselect form-control select-cus", data_width = "100%", data_filter = "true", data_action_onchange = "true", data_height = "300" })
+        </div>
+        <div class="col-md-2 col-sm-12" style="margin-top:5px;">
+            @Html.DropDownListFor(model => model.AssignedUserId, (IEnumerable<SelectListItem>)ViewBag.User, "Select Users", new { @class = "mt-multiselect form-control select-cus", data_width = "100%", data_filter = "true", data_action_onchange = "true", data_height = "300" })
+        </div>
+        <div class="col-md-2 col-sm-12" style="margin-top:5px;">
+            @Html.DropDownListFor(model => model.StatusId, (IEnumerable<SelectListItem>)ViewBag.Status, "Select Status", new { @class = "mt-multiselect form-control select-cus", data_width = "100%", data_filter = "true", data_action_onchange = "true", data_height = "300" })
+        </div>*@
+                                            <div class="col-md-2 col-sm-12" style="margin-top:5px;">
+                                                <select class="form-control" name="DateType" id="DateType">
+                                                    <option value="1">Call Date</option>
+                                                    <option value="2">Follow Up Date</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-2 col-sm-12" style="margin-top:5px;">
+                                                @Html.TextBox("CallLogStartDate", null, new { @id = "CallLogStartDate", @class = "form-control form-control-solid placeholder-no-fix", @placeholder = "Select Start Date", @autocomplete = "off" })
+                                            </div>
+                                            <div class="col-md-2 col-sm-12" style="margin-top:5px;">
+                                                @Html.TextBox("CallLogEndDate", null, new { @id = "CallLogEndDate", @class = "form-control form-control-solid placeholder-no-fix", @placeholder = "Select End Date", @autocomplete = "off" })
+                                            </div>
+                                            <div class="col-md-2 col-sm-12 " style="text-align:right;margin-top:5px;">
+                                                <button type="button" class="btn green si ri" onclick="TableDatatablesColreorder1.init();">Filter</button>
+                                                <button type="button" class="btn default si ri" onclick="CallLogclearfilter();" style="background-color:lightgray;">Clear</button>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                    <div class="col-sm-12 " style="text-align:right;margin-top:5px;">
+                                        <button type="button" style="margin-left:5px;float:right" class="btn btn-primary mar si" onclick="AddOpportunities_TasksCallLog();">Add</button>
+                                    </div>
+                                    <div class="portlet-body mt-3" id="divOpportunities_TasksCallLogTable" style="margin-top:40px">
+                                        <table class="table table-striped table-bordered table-hover" id="Opportunities_TasksCallLogTable"></table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="myModalCallLogAdd" class="modal fade" data-controls-modal="myModal" data-backdrop="static" data-keyboard="false" style=" background-color: rgba(97, 95, 95, 0.65); opacity: 1;">
+        <div class="modal-dialog" style="top:25%">
+            <div class="modal-content">
+                <div class="modal-header" style="background: #D3DBEA">
+                    <h5 style="color: #6a9922;font-weight: 400;">Add <span id="TaskNameformodel"></span>'s CallLog</h5>
+                </div>
+                <input type="hidden" id="CallLogId" />
+                <div class="modal-body">
+                    <form>
+                        <div class="form-body row">
+                            <div class="col-md-10">
+                                <div class="form-group row">
+                                    <label class="control-label col-md-4">Contact Name <span>*</span></label>
+                                    <div class="col-md-8">
+                                        @Html.TextBox("CallLogContactName","", new { @class = "form-control form-control-solid placeholder-no-fix", @placeholder = "Enter Contact Name", @autocomplete = "off" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-10">
+                                <div class="form-group row">
+                                    <label class="control-label col-md-4">Call Date <span>*</span></label>
+                                    <div class="col-md-8">
+                                        @Html.TextBox("CallLogCallDate", "", new { @class = "form-control form-control-solid placeholder-no-fix", @placeholder = "Enter Call Date",@autocomplete="off" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-10">
+                                <div class="form-group row">
+                                    <label class="control-label col-md-4">Call Log Type <span>*</span></label>
+                                    <div class="col-md-8">
+                                        @Html.DropDownList("CallLogType", (IEnumerable<SelectListItem>)ViewBag.CallLogType, "Select Call Log Type", new { @class = "form-control", @autocomplete = "off" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-10">
+                                <div class="form-group row">
+                                    <label class="control-label col-md-4">Notes <span>*</span></label>
+                                    <div class="col-md-8">
+                                        @Html.TextBox("CallLogNotes", "", new { @class = "form-control form-control-solid placeholder-no-fix", @placeholder = "Enter Notes", @autocomplete = "off" })
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-10">
+                                <div class="form-group row">
+                                    <label class="control-label col-md-4">Follow Up Date <span>*</span></label>
+                                    <div class="col-md-8">
+                                        @Html.TextBox("CallLogFollowUpDate", "", new { @class = "form-control form-control-solid placeholder-no-fix", @placeholder = "Select Follow up Date", @autocomplete = "off" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <a data-dismiss="modal" id="successok" class="btn btn-success" style="background:#EC747C;color: #fff; border: none;" onclick="closeCallLogModel()">Cancel</a>
+                    <a id="checkout" class="btn btn-success Lateconfirmbutton" style="background:#6a9922;color: #fff; border: none;" onclick="CallLogValidation()">Confirm</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+
+        jQuery(document).ready(function () {
+            $("#CallLogTab").addClass("disabled");
+        $('#StartDate').datetimepicker({
+            useCurrent: false, //Important! See issue #1075
+            format: 'DD/MM/YYYY',
+            defaultDate: new Date()
+        });
+        $('#EndDate').datetimepicker({
+            useCurrent: false, //Important! See issue #1075
+            format: 'DD/MM/YYYY',
+            defaultDate: new Date()
+        });
+            $('#CallLogStartDate').datetimepicker({
+            useCurrent: false, //Important! See issue #1075
+            format: 'DD/MM/YYYY',
+            defaultDate: new Date()
+        });
+            $('#CallLogEndDate').datetimepicker({
+            useCurrent: false, //Important! See issue #1075
+            format: 'DD/MM/YYYY',
+            defaultDate: new Date()
+        });
+        $('#CallLogCallDate').datetimepicker({
+            useCurrent: false, //Important! See issue #1075
+            format: 'DD/MM/YYYY',
+            defaultDate: new Date()
+        });
+        $('#CallLogFollowUpDate').datetimepicker({
+            useCurrent: false, //Important! See issue #1075
+            format: 'DD/MM/YYYY',
+            defaultDate: new Date()
+        });
+
+        $("#StartDate").on("dp.change", function (e) {
+            $('#EndDate').data("DateTimePicker").minDate(e.date);
+        });
+        $("#EndDate").on("dp.change", function (e) {
+            $('#StartDate').data("DateTimePicker").maxDate(e.date);
+        });
+        $("#CallLogStartDate").on("dp.change", function (e) {
+            $('#CallLogEndDate').data("DateTimePicker").minDate(e.date);
+        });
+        $("#CallLogEndDate").on("dp.change", function (e) {
+            $('#CallLogStartDate').data("DateTimePicker").maxDate(e.date);
+        });
+
+         if (@ProjectSession.OpportunitiesTaskOppotunitiesID > 0) {
+             $("#OpportunityId").val(@ProjectSession.OpportunitiesTaskOppotunitiesID);
+        }
+        if (@ProjectSession.OpportunitiesTaskUserID > 0) {
+            $("#AssignedUserId").val(@ProjectSession.OpportunitiesTaskUserID);
+        }
+        if (@ProjectSession.OpportunitiesTaskStatusID > 0) {
+            $("#StatusId").val(@ProjectSession.OpportunitiesTaskStatusID);
+        }
+        if ("@ProjectSession.OpportunitiesTaskStartDate" != "") {
+            $("#StartDate").val("@ProjectSession.OpportunitiesTaskStartDate");
+        }
+        if ("@ProjectSession.OpportunitiesTaskEndDate" != "") {
+            $("#EndDate").val("@ProjectSession.OpportunitiesTaskEndDate");
+            }
+
+        if (@ProjectSession.CallLogDateType > 0) {
+            $("#DateType").val(@ProjectSession.CallLogDateType);
+        }
+        if ("@ProjectSession.CallLogStartDate" != "") {
+            $("#CallLogStartDate").val("@ProjectSession.CallLogStartDate");
+        }
+        if ("@ProjectSession.CallLogEndDate" != "") {
+            $("#CallLogEndDate").val("@ProjectSession.CallLogEndDate");
+        }
+            TableDatatablesColreorder.init();
+           
+    });
+
+    function clearfilter() {
+        $("#OpportunityId").val("");
+        $('#OpportunityId').multiselect('rebuild');
+        $("#AssignedUserId").val("");
+        $('#AssignedUserId').multiselect('rebuild');
+        $("#StatusId").val("");
+        $('#StatusId').multiselect('rebuild');
+        $("#StartDate").val("");
+        $("#EndDate").val("");
+        TableDatatablesColreorder.init();
+    }
+    function CallLogclearfilter() {
+        $("#CallLogStartDate").val("");
+        $("#CallLogEndDate").val("");
+        TableDatatablesColreorder1.init();
+    }
+    var TableDatatablesColreorder = function () {
+
+        var initTable1 = function () {
+            var table = $('#Opportunities_TasksTable');
+
+            var oTable = table.dataTable({
+                "stateSave": true,
+                "autoWidth": false,
+                "paging": true,
+                "scrollx": true,
+                // Internationalisation. For more info refer to http://datatables.net/manual/i18n
+                "language": {
+                    "aria": {
+                        "sortAscending": ": activate to sort column ascending",
+                        "sortDescending": ": activate to sort column descending"
+                    },
+                    "emptyTable": "No Data Found",
+                    "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+                    "infoEmpty": "No entries found",
+                    "infoFiltered": "(filtered1 from _MAX_ total entries)",
+                    "lengthMenu": "_MENU_ entries",
+                    "search": "Search:",
+                    "zeroRecords": "No matching records found"
+                },
+                "pageLength": 10,
+                "processing": true,
+                "serverSide": true,
+                "ajax": {
+                    async: true,
+                    url: '@Url.Action(Actions.BindOpportunities_Tasks, Controllers.Opportunities_Tasks, new { area =""})',
+                    type: "post",
+                    data: BuildSearchCriteria()
+                },
+                "columns": [
+                    {
+                        "title": "Name",
+                        "data": null,
+                        "render": function (data, type, row) {
+                            var Id = "'"+btoa(row["Id"])+"'";
+                            var appendstring = '';
+
+                            appendstring += '<a title="Click to See Call Log" onclick="ActiveCallLogTab(' + Id + ')" id="TaskName_' + row["Id"] + '" >' + row["Name"] + '</a>&nbsp; ';
+                            return appendstring;
+                        },
+                        "orderable": false,
+                        "class": "action-icons"
+                    },
+                    { "title": "Description", "data": "Description", "orderable": true },
+                    { "title": "Opportunity Name", "data": "OpportunityName", "orderable": true },
+                    { "title": "Assigned User Name", "data": "AssignedUserName", "orderable": true },
+                    { "title": "Notes", "data": "Notes", "orderable": true },
+                    { "title": "Follow up Date", "data": "FollowupDate", "orderable": true },
+                    {
+                        "title": "Action",
+                        "data": null,
+                        "render": function (data, type, row) {
+                            var Id = btoa(row["Id"]);
+                            var appendstring = '';
+                            var url = "@Url.Action(Actions.Manage, Controllers.Opportunities_Tasks, new { Area = ""})";
+                            var url1 = "@Url.Action(Actions.SendEmail, Controllers.Opportunities_Tasks, new { Area = ""})";
+
+                                appendstring += '<a  href="' + url + "?Id=" + Id + '" title="Edit"  > <img src="@Url.Content("~/Styles/img/edit.png")" alt="Edit" /></a>&nbsp; ';
+                                appendstring += '<a  href="javascript:void(0);" onclick="Delete(' + row["Id"] + ')" title="Delete"  > <img src="@Url.Content("~/Styles/img/delete.png")" alt="Delete" /></a> ';
+                                appendstring += '<a  href="' + url1 + "?Id=" + Id + '" title="Email"  > <span class="fa fa-envelope"></span></a>&nbsp; ';
+
+                            return appendstring;
+                        },
+                        "orderable": false,
+                        "class": "action-icons"
+                    }
+                ],
+                // setup buttons extentension: http://datatables.net/extensions/buttons/
+                "buttons": [],
+
+                // setup responsive extension: http://datatables.net/extensions/responsive/
+                responsive: true,
+
+                "lengthMenu": [
+                    [5, 10, 15, 20, 50, 100],
+                    [5, 10, 15, 20, 50, 100]// change per page values here
+                ],
+                "dom": "<'row' <'col-md-12'B>><'row'<'col-md-6 col-sm-12'l><'col-md-6 col-sm-12'f>r><'table-scrollable't><'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>", // horizobtal scrollable datatable
+            });
+        }
+
+        return {
+
+            //main function to initiate the module
+            init: function () {
+                if ($.fn.DataTable.isDataTable("#Opportunities_TasksTable")) {
+                    $('#Opportunities_TasksTable').dataTable().fnDestroy();
+                    $('#Opportunities_TasksTable').html('<table class="table table-striped" width="100%" id="Opportunities_TasksTable"></table>');
+                }
+                initTable1();
+            }
+
+        };
+
+    }();
+
+
+    function AddOpportunities_Tasks() {
+        var url = "@Url.Action(Actions.Manage, Controllers.Opportunities_Tasks )"
+        window.location.href = url ;
+    }
+
+    function BuildSearchCriteria() {
+        try {
+            var param = {};
+            param["OpportunityId"] = $("#OpportunityId").val();
+            param["AssignedUserId"] = $("#AssignedUserId").val();
+            param["StatusId"] = $("#StatusId").val();
+            param["StartDate"] = $("#StartDate").val();
+            param["EndDate"] = $("#EndDate").val();
+            return addRequestVerificationToken(param);
+        }
+        catch (e) { }
+        }
+
+
+        var TableDatatablesColreorder1 = function () {
+
+        var initTable2 = function () {
+            var table = $('#Opportunities_TasksCallLogTable');
+
+            var oTable = table.dataTable({
+                "stateSave": true,
+                "autoWidth": false,
+                "paging": true,
+                "scrollx": true,
+                // Internationalisation. For more info refer to http://datatables.net/manual/i18n
+                "language": {
+                    "aria": {
+                        "sortAscending": ": activate to sort column ascending",
+                        "sortDescending": ": activate to sort column descending"
+                    },
+                    "emptyTable": "No Data Found",
+                    "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+                    "infoEmpty": "No entries found",
+                    "infoFiltered": "(filtered1 from _MAX_ total entries)",
+                    "lengthMenu": "_MENU_ entries",
+                    "search": "Search:",
+                    "zeroRecords": "No matching records found"
+                },
+                "pageLength": 10,
+                "processing": true,
+                "serverSide": true,
+                "ajax": {
+                    async: true,
+                    url: '@Url.Action(Actions.BindCallLog, Controllers.Opportunities_Tasks, new { area =""})',
+                    type: "post",
+                    data: BuildSearchCriteria1()
+                },
+                "columns": [
+
+                    { "title": "Opportunities Task", "data": "TaskName", "orderable": true },
+                    { "title": "CallDate", "data": "CallDate", "orderable": true },
+                    { "title": "CallLog Type", "data": "CallLogType", "orderable": true },
+                    { "title": "Contact Name", "data": "ContactName", "orderable": true },
+                    { "title": "Notes", "data": "Notes", "orderable": true },
+                    { "title": "Follow up Date", "data": "FollowUpDate", "orderable": true },
+                    {
+                        "title": "Action",
+                        "data": null,
+                        "render": function (data, type, row) {
+                            var Id = "'" + btoa(row["Id"])+"'";
+                            var appendstring = '';
+                            @*var url = "@Url.Action(Actions.Manage, Controllers.Opportunities_Tasks, new { Area = ""})";
+                            var url1 = "@Url.Action(Actions.SendEmail, Controllers.Opportunities_Tasks, new { Area = ""})";*@
+
+                            appendstring += '<a title="Edit" onclick="SelectCallLogForEdit('+Id+')"> <img src="@Url.Content("~/Styles/img/edit.png")" alt="Edit" /></a>&nbsp; ';
+                            appendstring += '<a  href="javascript:void(0);" onclick="CallLogDelete(' + row["Id"] + ')" title="Delete"  > <img src="@Url.Content("~/Styles/img/delete.png")" alt="Delete" /></a> ';
+                            //appendstring += '<a  href="' + url1 + "?Id=" + Id + '" title="Email"  > <span class="fa fa-envelope"></span></a>&nbsp; ';
+
+                            return appendstring;
+                        },
+                        "orderable": false,
+                        "class": "action-icons"
+                    }
+                ],
+                // setup buttons extentension: http://datatables.net/extensions/buttons/
+                "buttons": [],
+
+                // setup responsive extension: http://datatables.net/extensions/responsive/
+                responsive: true,
+
+                "lengthMenu": [
+                    [5, 10, 15, 20, 50, 100],
+                    [5, 10, 15, 20, 50, 100]// change per page values here
+                ],
+                "dom": "<'row' <'col-md-12'B>><'row'<'col-md-6 col-sm-12'l><'col-md-6 col-sm-12'f>r><'table-scrollable't><'row'<'col-md-5 col-sm-12'i><'col-md-7 col-sm-12'p>>", // horizobtal scrollable datatable
+            });
+        }
+
+        return {
+
+            //main function to initiate the module
+            init: function () {
+                if ($.fn.DataTable.isDataTable("#Opportunities_TasksCallLogTable")) {
+                    $('#Opportunities_TasksCallLogTable').dataTable().fnDestroy();
+                    $('#Opportunities_TasksCallLogTable').html('<table class="table table-striped" width="100%" id="Opportunities_TasksCallLogTable"></table>');
+                }
+                initTable2();
+            }
+
+        };
+
+    }();
+
+    function BuildSearchCriteria1() {
+        try {
+            var param = {};
+            debugger
+            //param["OpportunityId"] = $("#OpportunityId").val();
+            //param["AssignedUserId"] = $("#AssignedUserId").val();
+            //param["StatusId"] = $("#StatusId").val();
+            param["StartDate"] = $("#CallLogStartDate").val();
+            param["EndDate"] = $("#CallLogEndDate").val();
+            param["TaskId"] = $("#TaskId").val();
+            param["DateType"] = $("#DateType").val();
+            return addRequestVerificationToken(param);
+        }
+        catch (e) { }
+    }
+
+        function AddOpportunities_TasksCallLog() {
+            $("#myModalCallLogAdd").modal();
+        }
+
+    function onSuccess(responseText, statusText, xhr, $form) {
+        if (responseText[0] == 0) {
+            ShowMessageToastr(responseText[1], responseText[2], false);
+            TableDatatablesColreorder1.init();
+        }
+        else {
+            ShowMessageToastr(responseText[1], responseText[2], false);
+        }
+    }
+
+    function Delete(Id) {
+        $('.toast').remove();
+        ShowMessageToastr('@Enums.MessageType.info', 'are you sure this record delete ?', true, 'ConfirmDelete("' + Id + '")', "");
+    }
+
+    function ConfirmDelete(Id) {
+        loaderon();
+         $.ajax({
+            url: '@Url.Action(Actions.Opportunities_TasksDelete, Controllers.Opportunities_Tasks )',
+            data: { Id : Id },
+            type: 'Post',
+            datatype: 'json',
+             success: function (result) {
+                 window.location.reload();
+             },
+             error: function (result){
+                 window.location.reload();
+             }
+        });
+        }
+
+        function InsertCallLog() {
+            var model = {
+                Id: atob($("#CallLogId").val()),
+                CallDate: $("#CallLogCallDate").val(),
+                ContactName: $("#CallLogContactName").val(),
+                Type: $("#CallLogType").val(),
+                Notes: $("#CallLogNotes").val(),
+                FollowUpDate: $("#CallLogFollowUpDate").val(),
+                CallLogId: $("#CallLogId").val(),
+                TaskId: atob($("#TaskId").val())
+            };
+        loaderon();
+         $.ajax({
+            url: '@Url.Action(Actions.AddEditTasks_CallLog, Controllers.Opportunities_Tasks )',
+             data: { callLog: model },
+            type: 'Post',
+            datatype: 'json',
+             success: function (result) {
+                 $("#myModalCallLogAdd").modal("hide");
+                 TableDatatablesColreorder1.init();
+                 closeCallLogModel();
+                 loaderoff();
+                 if (model.Id > 0) {
+                     ShowMessageToastr('@Enums.MessageType.success.ToString()', "Call Log Updated SuccessFully!");
+                 } else {
+                     ShowMessageToastr('@Enums.MessageType.success.ToString()', "Call Log Inserted SuccessFully!");
+                 }
+             },
+             error: function (result) {
+                 $("#myModalCallLogAdd").modal("hide");
+                 TableDatatablesColreorder1.init();
+                 closeCallLogModel();
+                 loaderoff();
+             }
+        });
+        }
+
+        function SelectCallLogForEdit(Id) {
+            loaderon();
+            if (Id != "" && Id != null && Id != "MA==") {
+                $.ajax({
+                    url: '@Url.Action(Actions.GetCallLogById, Controllers.Opportunities_Tasks )',
+                    data: { id: Id },
+                    type: 'Get',
+                    datatype: 'json',
+                    success: function (result) {
+                        if (result != null) {
+                            $("#CallLogCallDate").val(result.CallDate);
+                            $("#CallLogContactName").val(result.ContactName);
+                            $("#CallLogType").val(result.CallLogType);
+                            $("#CallLogNotes").val(result.Notes);
+                            $("#CallLogFollowUpDate").val(result.FollowUpDate);
+                            $("#CallLogId").val(Id);
+                        }
+                        $("#myModalCallLogAdd").modal();
+                        loaderoff();
+                    },
+                    error: function (result) {
+                        $("#myModalCallLogAdd").modal();
+                        loaderoff();
+                        TableDatatablesColreorder1.init();
+                    }
+                });
+            }
+            else{
+                loaderoff();
+            }  
+    }
+        function closeCallLogModel() {
+            $("#CallLogId").val("");
+            $("#CallLogCallDate").val("");
+            $("#CallLogCallDate").css("border", "1px solid #c2cad8");
+            $("#CallLogContactName").val("");
+            $("#CallLogContactName").css("border", "1px solid #c2cad8");
+            $("#CallLogType").val("");
+            $("#CallLogType").css("border", "1px solid #c2cad8");
+            $("#CallLogNotes").val("");
+            $("#CallLogNotes").css("border", "1px solid #c2cad8");
+            $("#CallLogFollowUpDate").val("");
+            $("#CallLogFollowUpDate").css("border", "1px solid #c2cad8");
+            $("#CallLogId").val("");
+        }
+        function CallLogValidation() {
+                if ($("#CallLogCallDate").val() =="") {
+                    $("#CallLogCallDate").css("border", "1px solid red");
+                }
+                if ($("#CallLogContactName").val() == "") {
+                    $("#CallLogContactName").css("border", "1px solid red");
+                }
+                if ($("#CallLogType").val() == "") {
+                    $("#CallLogType").css("border", "1px solid red");
+                }
+                if ($("#CallLogNotes").val() == "") {
+                    $("#CallLogNotes").css("border", "1px solid red");
+                }
+                if ($("#CallLogFollowUpDate").val() == "") {
+                    $("#CallLogFollowUpDate").css("border", "1px solid red");
+                }
+                if ($("#CallLogCallDate").val() != "" && $("#CallLogContactName").val() != ""
+                    && $("#CallLogType").val() != "" && $("#CallLogNotes").val() != "" && $("#CallLogFollowUpDate").val() != "") {
+                    InsertCallLog();
+                }
+        }
+
+    function CallLogDelete(Id) {
+        $('.toast').remove();
+        ShowMessageToastr('@Enums.MessageType.info', 'are you sure this record delete ?', true, 'ConfirmCallLogDelete("' + Id + '")', "");
+    }
+
+        function ConfirmCallLogDelete(Id) {
+        loaderon();
+         $.ajax({
+            url: '@Url.Action(Actions.CallLogDelete, Controllers.Opportunities_Tasks )',
+            data: { Id : Id },
+            type: 'Post',
+            datatype: 'json',
+             success: function (result) {
+                 ShowMessageToastr('@Enums.MessageType.success.ToString()', "Call Log Deleted SuccessFully.");
+                 TableDatatablesColreorder1.init();
+                 loaderoff();
+             },
+             error: function (result){
+                 TableDatatablesColreorder1.init();
+                 loaderoff();
+             }
+        });
+        }
+        function ActiveCallLogTab(id) {
+            $("#TaskId").val(id);
+            $("#CallLogTab").removeClass("disabled");
+            $("#CallLogTab").click();
+            $("#TaskNameformodel").html($("#TaskName_" + atob(id)).html());
+            $("#CallLogBreadcrumbhtml").html($("#TaskName_" + atob(id)).html());
+            $("#TaskBreadcrum").css("display","none");
+            $("#CallLogBreadcrum").css("display","block");
+            TableDatatablesColreorder1.init();
+            $("#TasksTab").click(function () {
+                $("#TaskBreadcrum").css("display", "block");
+                $("#CallLogBreadcrum").css("display", "none");
+            }); $("#CallLogTab").click(function () {
+                $("#TaskBreadcrum").css("display", "none");
+                $("#CallLogBreadcrum").css("display", "block");
+            }); 
+        }
+        
+    </script>
+

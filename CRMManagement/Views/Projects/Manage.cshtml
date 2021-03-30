@@ -1,0 +1,265 @@
+﻿@using CRMManagement.Common;
+@using CRMManagement.Pages;
+@using CRMManagement.Infrastructure;
+@using CRMManagement.Entities.Contract;
+@Html.AntiForgeryToken()
+@model AbstractProjects
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .borred {
+        border: 1px solid red !important;
+    }
+
+    @@media screen and (max-width: 600px) {
+        .login .content {
+            width: 90%;
+            padding: 10px 10px 30px;
+        }
+    }
+
+    .login .content .form-control {
+        background: white !important;
+    }
+
+    .mt-element-step .step-thin .mt-step-number {
+        font-size: 20px;
+    }
+
+    .mt-element-step .step-thin .mt-step-title {
+        font-size: 18px;
+    }
+
+    .mt-element-step .step-thin .mt-step-content {
+        font-size: 13px;
+    }
+
+    .control-label span {
+        color: red;
+    }
+
+    .login .content {
+        width: 80%;
+    }
+
+    .form-group label {
+        text-align: right;
+        margin: 10px 0px;
+    }
+
+    .form-group .col-md-5 {
+        margin: 10px 0px;
+    }
+
+    @@media (min-width:320px) and (max-width:359px) {
+        .bread {
+            margin-top: 2rem;
+        }
+    }
+
+    .mar {
+        margin-top: 13px;
+        margin-left: 11px;
+    }
+</style>
+<div class="page-content-wrapper right-side d-flex flex-column">
+    <div class="page-content container-fluid pb-5 rightfix rightscroll">
+        <div class="portlet-title" style="margin-bottom:20px;">
+            <div class="caption font-dark">
+                <span class="caption-subject bold uppercase" style="font-size:14px">  @Html.ActionLink("Dashboard", "Index", "Dashboard") / @Html.ActionLink("Projects", Actions.Index, Controllers.Projects) / Manage Projects</span>
+            </div>
+            <div class="tools"></div>
+        </div>
+        @*<ul class="page-breadcrumb breadcrumb bread">
+            <li>
+                <span class="active" style="font-weight:bold;color:#337ab7" href="#"> Manage Projects</span>
+            </li>
+        </ul>*@
+        <!-- END PAGE BREADCRUMB -->
+        <!-- BEGIN PAGE BASE CONTENT -->
+        <div class="row">
+            <div class="col-md-12">
+                <!-- BEGIN EXAMPLE TABLE PORTLET-->
+                <div class="portlet light bordered">
+
+                    <div class="portlet-body" id="divCartTable">
+                        <div class="portlet-body" style="margin:20px;">
+                            @using (Html.BeginForm(Actions.AddEditProjects, Controllers.Projects, FormMethod.Post, new { id = "frmManageUsers", enctype = "multipart/form-data", @class = "Otplogin-form" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                @Html.HiddenFor(model => model.Id)
+                                <div class="row">
+                                    <div class="form-body row">
+                                        <div class="col-md-6">
+                                            <div class="form-group row">
+                                                <label class="control-label col-md-4">Company Contact<span>*</span></label>
+                                                <div class="col-md-8">
+                                                    @Html.DropDownListFor(model => model.CompanyContactId, (IEnumerable<SelectListItem>)ViewBag.Company, "Select Company Contact", new { @class = "mt-multiselect form-control select-cus", data_width = "100%", data_filter = "true", data_action_onchange = "true", data_height = "300" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group row">
+                                                <label class="control-label col-md-4">Name<span>*</span></label>
+                                                <div class="col-md-8">
+                                                    @Html.TextBoxFor(model => model.Name, new { @class = "form-control form-control-solid placeholder-no-fix", @placeholder = "Enter Name" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group row">
+                                                <label class="control-label col-md-4">Description<span>*</span></label>
+                                                <div class="col-md-8">
+                                                    @Html.TextBoxFor(model => model.Description, new { @class = "form-control form-control-solid placeholder-no-fix", @placeholder = "Enter Description" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group row">
+                                                <label class="control-label col-md-4">Start Date <span>*</span></label>
+                                                <div class="col-md-8">
+                                                    @Html.TextBoxFor(model => model.StartDate, new { @class = "form-control form-control-solid placeholder-no-fix", @placeholder = "Select Start Date", @autocomplete = "off" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group row">
+                                                <label class="control-label col-md-4">End Date<span>*</span></label>
+                                                <div class="col-md-8">
+                                                    @Html.TextBoxFor(model => model.EndDate, new { @class = "form-control form-control-solid placeholder-no-fix", @placeholder = "Select End Date", @autocomplete = "off" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group row">
+                                                <label class="control-label col-md-4">Status<span>*</span></label>
+                                                <div class="col-md-8">
+                                                    @Html.DropDownListFor(model => model.StatusId, (IEnumerable<SelectListItem>)ViewBag.Status, "Select Status", new { @class = "mt-multiselect form-control select-cus", data_width = "100%", data_filter = "true", data_action_onchange = "true", data_height = "300" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group row">
+                                                <div class="col-md-4"></div>
+                                                <div class="col-md-8" style="text-align:right">
+                                                    <a href="@Url.Action("Index", "Projects")" class="btn btn-default" style="background:silver;">Cancel</a>
+                                                    @if (ProjectSession.AdminRoleID != 3)
+                                                    {
+                                                        <button class="btn btn-primary">Submit</button>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <!-- END EXAMPLE TABLE PORTLET-->
+            </div>
+        </div>
+        <!-- END PAGE BASE CONTENT -->
+    </div>
+    <!-- END CONTENT BODY -->
+</div>
+<!-- SCRIPT AND FORM VALIDATION -->
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+        FormValidation.init();
+        $('#StartDate').datetimepicker({
+            useCurrent: false, //Important! See issue #1075
+            format: 'DD/MM/YYYY'
+        });
+        $('#EndDate').datetimepicker({
+            useCurrent: false, //Important! See issue #1075
+            format: 'DD/MM/YYYY'
+        });
+        $("#StartDate").on("dp.change", function (e) {
+            $('#EndDate').data("DateTimePicker").minDate(e.date);
+        });
+        $("#EndDate").on("dp.change", function (e) {
+            $('#StartDate').data("DateTimePicker").maxDate(e.date);
+        });
+    });
+
+    //Validation PaymentsDetails
+    var FormValidation = function () {
+
+        var handleValidation1 = function () {
+            var form1 = $('#frmManageUsers');
+            var error1 = $('.alert-danger', form1);
+            form1.validate({
+                errorElement: 'span', //default input error message container
+                errorClass: 'help-block help-block-error', // default input error message class
+                focusInvalid: false, // do not focus the last invalid input
+                ignore: "",  // validate all fields including form hidden input
+                rules: {
+                    CompanyContactId: {
+                        required: true
+                    },
+                    Name: {
+                        required: true
+                    }, Description: {
+                        required: true
+                    }, StatusId: {
+                        required: true
+                    },
+                    StartDate: {
+                        required: true
+                    }, EndDate: {
+                        required: true
+                    },
+                },
+
+                invalidHandler: function (event, validator) { //display error alert on form submit
+                    error1.show();
+                    App.scrollTo(error1, -200);
+                },
+
+                errorPlacement: function (error, element) { // render error placement for each input type
+                    var cont = $(element).parent('.input-group');
+                    if (cont.size() > 0) {
+                        cont.after(error);
+                    } else {
+                        element.after(error);
+                    }
+                },
+
+                highlight: function (element) { // hightlight error inputs
+                    $(element)
+                        .closest('.form-group').addClass('has-error'); // set error class to the control group
+                },
+
+                unhighlight: function (element) { // revert the change done by hightlight
+                    $(element)
+                        .closest('.form-group').removeClass('has-error'); // set error class to the control group
+                },
+
+                success: function (label) {
+                    label
+                        .closest('.form-group').removeClass('has-error'); // set success class to the control group
+                },
+
+                submitHandler: function (form) {
+                    error1.hide();
+                    $("#Id").val((atob($("#Id").val())));
+                    $("#frmManageUsers").val((atob($("#frmManageUsers").val())));
+                    form.submit();
+                }
+            });
+        }
+
+        return {
+            //main function to initiate the module
+            init: function () {
+                handleValidation1();
+            }
+        };
+    }();
+
+</script>
+

@@ -1,0 +1,65 @@
+﻿<!-- REFERENCES -->
+
+@using CRMManagement.Pages;
+@using CRMManagement.Infrastructure;
+@using CRMManagement.Entities.V1;
+
+@{
+    ViewBag.Title = "Success";
+    Layout = null;
+
+}
+<!doctype html>
+<html>
+
+<!-- BEGIN HEADER -->
+
+<head>
+    <meta charset="utf-8">
+    <title>Login | RSA</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet" type="text/css" />
+    <link rel="shortcut icon" href="~/images/favicon.png" />
+
+    @Styles.Render("~/Styles/globalstyles")
+
+    @Styles.Render("~/Styles/pluginsstyles")
+
+    @Styles.Render("~/Styles/themestyles")
+
+    <link href="~/Styles/login.min.css" rel="stylesheet" type="text/css" />
+
+    @Scripts.Render("~/bundles/corepulgins")
+</head>
+
+<!-- END HEADER -->
+<!-- BEGIN BODY -->
+
+<body class=" login">
+    <div class="logo">
+
+    </div>
+    <div class="content" style="width: 70%;">
+        <div style="text-align: center;height: 460px;">
+            <i class="fa fa-check-circle" aria-hidden="true" style="font-size: 150px;color: #5CB85C;margin-top: 95px;"></i>
+            <h2 style="margin-top: 50px;">Your password changed successfully</h2>
+        </div>
+    </div>
+    <!-- PopUp -->
+    @Html.Raw(ViewBag.openPopup)
+
+    <!-- BEGIN PAGE LEVEL PLUGINS -->
+    @Scripts.Render("~/bundles/jqval")
+    <!-- END PAGE LEVEL PLUGINS -->
+
+    @Scripts.Render("~/bundles/toaster")
+
+    @Scripts.Render("~/bundles/commonscripts")
+    <!-- BEGIN THEME GLOBAL SCRIPTS -->
+    @Scripts.Render("~/bundles/globalscripts")
+    <!-- END THEME GLOBAL SCRIPTS -->
+</body>
+
+<!-- END BODY -->
+</html>

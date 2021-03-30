@@ -1,0 +1,170 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Invoice Template</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    
+</head>
+<body>
+
+<div class="container"> 
+<!-- Simple Invoice - START -->
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12">
+            <br />
+            <img src="http://CRMManagement.com/Content/images/logoOptn.jpg" style="width:100px" alt="">
+            <div class="text-center">
+                <h2><strong>Invoice</strong></h2>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-xs-12 col-md-4 col-lg-4" style="box-sizing: content-box;width: 300px;height: 100px;padding: 30px;margin-bottom:30px; border: 2px solid black;float:left">
+                    <div class="panel panel-default height">
+                        <div><strong>Seller Details</strong></div>
+                        <div class="panel-body">
+                            <strong>#SellerName#</strong><br>
+                            #SellerAddress#<br>
+                            GST Number :<br />
+                            #GSTNumber#
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-4 col-lg-4" style="box-sizing: content-box;width: 300px;height: 100px;margin-left:40px;margin-bottom:30px;padding: 30px;border: 2px solid black;float:left">
+                    <div class="panel panel-default height">
+                        <div><strong>Invoice Information</strong></div>
+                        <div class="panel-body">
+                            <strong>Invoice Number</strong> #InvoiceNumber#<br>
+                            <strong>Invoice Date</strong> #OrderDate#<br>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-4 col-lg-4" style="box-sizing: content-box;width: 300px;height: 100px;padding: 30px;margin-right:20px; margin-bottom:30px;border: 2px solid black;float:right">
+                    <div class="panel panel-default height">
+                        <div><strong>Shipping Address</strong></div>
+                        <div class="panel-body">
+                            <strong>#ConsigneeName# #LastName#</strong><br>
+                            #Address#
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12"  style="padding-top:200px">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <center><h2><strong>Order summary</strong></h2></center>
+                </div>
+                <div class="panel-body">
+                    <div class="table-responsive">
+                        <table align="center" style="box-sizing: content-box;width: 1200px;height: 100px;padding: 30px; border: 2px solid black;float:left">
+                            <thead>
+                                <tr>
+                                    <th align="center" style=""><strong>Description</strong></th>
+                                    <th align="center"><strong>Quantity</strong></th>
+                                    <th align="center"><strong>Unit Cost</strong></th>
+                                    <th align="center"><strong>Total Amount</strong></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                #SubHtml#
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td align="center">SGST</td>
+                                    <td align="center">#SGST#</td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td align="center">CGST</td>
+                                    <td align="center">#CGST#</td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td align="center">IGST</td>
+                                    <td align="center">#IGST#</td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div style="float:right;margin-right:50px">
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td style="float:left"><strong>Payment type:</strong></td>
+                                <td>#PaymentType#</td>
+                                <td align="center" style="float:right"><strong>Subtotal</strong></td>
+                                <td align="center">₹ #OriginalPrice#</td>
+                            </tr>
+                            <tr>
+                                <td>Subject to Ahmedabad jurisdiction</td>
+                                <td></td>
+                                <td align="center"><strong>Shipping Price</strong></td>
+                                <td align="center">₹ #ShippingCharge#</td>
+                            </tr>
+                            <tr>
+                                <td>This is a system generated invoice. No signature required.</td>
+                                <td></td>
+                                <td align="center"><strong>Discount : </strong></td>
+                                <td align="center">₹ #Discount#</td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td align="center"><strong>Total Amount: </strong></td>
+                                <td align="center">₹#PurchasePrice#</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.height {
+    min-height: 200px;
+}
+
+.icon {
+    font-size: 47px;
+    color: #5CB85C;
+}
+
+.iconbig {
+    font-size: 77px;
+    color: #5CB85C;
+}
+
+.table > tbody > tr > .emptyrow {
+    border-top: none;
+}
+
+.table > thead > tr > .emptyrow {
+    border-bottom: none;
+}
+
+.table > tbody > tr > .highrow {
+    border-top: 3px solid;
+}
+</style>
+
+<!-- Simple Invoice - END -->
+
+</div>
+
+</body>
+</html>
