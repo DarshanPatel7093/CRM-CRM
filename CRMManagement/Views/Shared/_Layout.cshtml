@@ -5,7 +5,7 @@
     /**/
 
     var curController = Convert.ToString(ViewContext.RouteData.Values["Controller"]);
-    var curAction = Convert.ToString(ViewContext.RouteData.Values["Actions"]);
+    var curAction = Convert.ToString(ViewContext.RouteData.Values["Action"]);
 }
 
 <!DOCTYPE html>
@@ -189,8 +189,8 @@
         </div>
         <div class="page-footer">
             <div class="page-footer-inner">
-                @DateTime.Now.Year &copy; CRMManagement
-                <a href="#">Privacy Policy</a> &nbsp;|&nbsp; All rights reserved.
+                @DateTime.Now.Year &copy; 
+                <a href="www.greenpi.ca" target="_blank">Green PI Inc</a> &nbsp;|&nbsp; All rights reserved.
             </div>
             <div class="scroll-to-top">
                 <i class="icon-arrow-up"></i>
@@ -245,7 +245,7 @@
                 case '@Controllers.Opportunities':
                     setActiveLink($('#lnkOpportunities').attr('id'));
                     break;
-                case '@Controllers.Opportunities_Tasks':
+                  case '@Controllers.Opportunities_Tasks':
                     switch ('@curAction') {
                         case '@Actions.Index':
                             setActiveLink($('#lnkOpportunities_Tasks').attr('id'));

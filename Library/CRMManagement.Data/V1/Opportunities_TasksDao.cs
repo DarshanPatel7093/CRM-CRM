@@ -29,7 +29,7 @@ namespace CRMManagement.Data.V1
             param.Add("@EndDate", EndDate, dbType: DbType.String, direction: ParameterDirection.Input);
             param.Add("@SortBy", pageParam.SortBy, dbType: DbType.String, direction: ParameterDirection.Input);
             param.Add("@SortDirection", pageParam.SortDirection, dbType: DbType.String, direction: ParameterDirection.Input);
-            if (ProjectSession.AdminRoleID == 3)
+            if (ProjectSession.AdminRoleID != 1)
             {
                 param.Add("@AssignedUserId", ProjectSession.UserID, dbType: DbType.Int32, direction: ParameterDirection.Input);
             }
@@ -85,6 +85,10 @@ namespace CRMManagement.Data.V1
         public override bool Opportunities_TasksDelete(int Id)
         {
             bool users = false;
+            if (ProjectSession.AdminRoleID == 3)
+            {
+                return users;
+            }
             var param = new DynamicParameters();
             param.Add("@Id", Id, dbType: DbType.Int32, direction: ParameterDirection.Input);
             param.Add("@LoginUserId", ProjectSession.UserID, dbType: DbType.Int32, direction: ParameterDirection.Input);

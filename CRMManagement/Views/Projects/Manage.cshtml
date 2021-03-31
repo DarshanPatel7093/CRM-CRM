@@ -172,11 +172,11 @@
         FormValidation.init();
         $('#StartDate').datetimepicker({
             useCurrent: false, //Important! See issue #1075
-            format: 'DD/MM/YYYY'
+            format: 'MM/DD/YYYY'
         });
         $('#EndDate').datetimepicker({
             useCurrent: false, //Important! See issue #1075
-            format: 'DD/MM/YYYY'
+            format: 'MM/DD/YYYY'
         });
         $("#StartDate").on("dp.change", function (e) {
             $('#EndDate').data("DateTimePicker").minDate(e.date);

@@ -54,7 +54,7 @@ namespace CRMManagement.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ActionName(Actions.BindOpportunities)]
-        public JsonResult BindOpportunities([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, int CompanyContactId = 0, int AssignedUserId = 0, int StatusId = 0, string StartDate="", string EndDate = "", int DateType = 0)
+        public JsonResult BindOpportunities([ModelBinder(typeof(DataTablesBinder))] IDataTablesRequest requestModel, int CompanyContactId = 0, int AssignedUserId = 0, int StatusId = 0, string StartDate = "", string EndDate = "", int DateType = 0)
         {
             try
             {
@@ -66,14 +66,14 @@ namespace CRMManagement.Controllers
                 ProjectSession.OpportunitiesStartDate = StartDate;
                 ProjectSession.OpportunitiesEndDate = EndDate;
                 ProjectSession.OpportunitiesDateType = DateType;
-               PageParam pageParam = new PageParam();
+                PageParam pageParam = new PageParam();
                 pageParam.Offset = requestModel.Start;
                 pageParam.Limit = requestModel.Length;
                 string Search = requestModel.Search.Value;
                 pageParam.SortBy = requestModel.Columns.ElementAt(requestModel.OrderColumn).Data;
                 pageParam.SortDirection = requestModel.OrderDir.ToUpper() == "DESC" ? "Descending" : "Ascending";
 
-                var model = abstractOpportunitiesServices.OpportunitiesSelectAll(pageParam, Search, CompanyContactId, AssignedUserId, StatusId, StartDate, EndDate,ProjectSession.UserID, DateType);
+                var model = abstractOpportunitiesServices.OpportunitiesSelectAll(pageParam, Search, CompanyContactId, AssignedUserId, StatusId, StartDate, EndDate, ProjectSession.UserID, DateType);
 
                 totalRecord = (int)model.TotalRecords;
                 filteredRecord = (int)model.TotalRecords;
@@ -211,7 +211,7 @@ namespace CRMManagement.Controllers
                     {
                         body = reader.ReadToEnd();
                     }
-                    Emailtext = Emailtext.Replace("#TASK#", "Opportunitie");
+                    Emailtext = Emailtext.Replace("#TASK#", "Opportunity");
                     Emailtext = Emailtext.Replace("#OPNAME#", model.Name);
                     Emailtext = Emailtext.Replace("#ASSIGNUSRNAME#", model.AssignedUserName);
                     Emailtext = Emailtext.Replace("#COMCONTNAME#", model.CompanyContactName);
@@ -220,10 +220,14 @@ namespace CRMManagement.Controllers
                     Emailtext = Emailtext.Replace("#StartDate#", model.StartDate);
                     Emailtext = Emailtext.Replace("#EndDate#", model.EndDate);
                     Emailtext = Emailtext.Replace("#SuccessRatePercent#", Convert.ToString(model.SuccessRatePercent));
-                    body = body.Replace("#TASK#", "Opportunitie");
+                    body = body.Replace("#TASK#", "Opportunity");
                     body = body.Replace("#USERNAME#", ProjectSession.UserName);
                     body = body.Replace("#MAINMESSAGE#", Emailtext);
-                    EmailHelper.Send(Email, "", "", "Opportunitie Details", body);
+                    //EmailHelper.Send(Email, "", "", "CRM Opportunity: " + model.Name, body);
+
+                    System.Net.Mail.Attachment Attachment1 = EmailHelper.AddAttachment("CRM Opportunity: " + model.Name, Emailtext, model.StartDate, model.EndDate);
+                    EmailHelper.Send1(Email, "", "", "CRM Opportunity: " + model.Name, body, Attachment1);
+
                 }
             }
 

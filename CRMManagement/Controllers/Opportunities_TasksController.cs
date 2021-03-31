@@ -80,7 +80,7 @@ namespace CRMManagement.Controllers
                 pageParam.Offset = requestModel.Start;
                 pageParam.Limit = requestModel.Length;
                 string Search = requestModel.Search.Value;
-               
+
                 if (requestModel.Draw == 1)
                 {
                     pageParam.SortBy = requestModel.Columns.ElementAt(5).Data;
@@ -124,7 +124,7 @@ namespace CRMManagement.Controllers
                 pageParam.Offset = requestModel.Start;
                 pageParam.Limit = requestModel.Length;
                 string Search = requestModel.Search.Value;
-               
+
                 if (requestModel.Draw == 1)
                 {
                     pageParam.SortBy = requestModel.Columns.ElementAt(5).Data;
@@ -136,7 +136,7 @@ namespace CRMManagement.Controllers
                     pageParam.SortDirection = requestModel.OrderDir.ToUpper() == "DESC" ? "Descending" : "Ascending";
                 }
 
-                var model = abstractCallLogServices.CallLogSelectAll(pageParam, Search, Convert.ToInt32(ConvertTo.Base64Decode(TaskId)), StartDate,EndDate, DateType);
+                var model = abstractCallLogServices.CallLogSelectAll(pageParam, Search, Convert.ToInt32(ConvertTo.Base64Decode(TaskId)), StartDate, EndDate, DateType);
 
                 totalRecord = (int)model.TotalRecords;
                 filteredRecord = (int)model.TotalRecords;
@@ -165,11 +165,11 @@ namespace CRMManagement.Controllers
                 pageParam.Offset = requestModel.Start;
                 pageParam.Limit = requestModel.Length;
                 string Search = requestModel.Search.Value;
-               
-                    pageParam.SortBy = requestModel.Columns.ElementAt(requestModel.OrderColumn).Data;
-                    pageParam.SortDirection = requestModel.OrderDir.ToUpper() == "DESC" ? "Descending" : "Ascending";
 
-                var model = abstractCallLogServices.CallLogReportSelectAll(pageParam, Search, StartDate,EndDate);
+                pageParam.SortBy = requestModel.Columns.ElementAt(requestModel.OrderColumn).Data;
+                pageParam.SortDirection = requestModel.OrderDir.ToUpper() == "DESC" ? "Descending" : "Ascending";
+
+                var model = abstractCallLogServices.CallLogReportSelectAll(pageParam, Search, StartDate, EndDate);
 
                 totalRecord = (int)model.TotalRecords;
                 filteredRecord = (int)model.TotalRecords;
@@ -249,7 +249,7 @@ namespace CRMManagement.Controllers
             {
                 model = abstractOpportunitiesServices.OpportunitiesSelectAllForAsignUser();
             }
-            
+
             List<SelectListItem> items = new List<SelectListItem>();
             foreach (var category in model.Values)
             {
@@ -287,18 +287,18 @@ namespace CRMManagement.Controllers
         [ActionName(Actions.AddEditOpportunities_Tasks)]
         public ActionResult AddEditOpportunities_Tasks(Opportunities_Tasks Opportunities_Tasks)
         {
-            
-                SuccessResult<AbstractOpportunities_Tasks> result = null;
-                result = abstractOpportunities_TasksServices.Opportunities_TasksUpsert(Opportunities_Tasks);
-                if (result.Code == 200 && result.Item != null)
-                {
-                    TempData["openPopup"] = CommonHelper.ShowAlertMessageToastr(MessageType.success.ToString(), result.Message);
-                }
-                else
-                {
-                    TempData["openPopup"] = CommonHelper.ShowAlertMessageToastr(MessageType.warning.ToString(), result.Message);
-                }
-            
+
+            SuccessResult<AbstractOpportunities_Tasks> result = null;
+            result = abstractOpportunities_TasksServices.Opportunities_TasksUpsert(Opportunities_Tasks);
+            if (result.Code == 200 && result.Item != null)
+            {
+                TempData["openPopup"] = CommonHelper.ShowAlertMessageToastr(MessageType.success.ToString(), result.Message);
+            }
+            else
+            {
+                TempData["openPopup"] = CommonHelper.ShowAlertMessageToastr(MessageType.warning.ToString(), result.Message);
+            }
+
             return RedirectToAction(Actions.Index, Pages.Controllers.Opportunities_Tasks);
         }
 
@@ -309,7 +309,7 @@ namespace CRMManagement.Controllers
             AbstractCallLog model = new CallLog();
             if (Id > 0)
             {
-                 model = abstractCallLogServices.CallLogSelectById(Id).Item;
+                model = abstractCallLogServices.CallLogSelectById(Id).Item;
             }
             return Json(model, JsonRequestBehavior.AllowGet);
         }
@@ -317,17 +317,17 @@ namespace CRMManagement.Controllers
         [ActionName(Actions.AddEditTasks_CallLog)]
         public JsonResult AddEditTasks_CallLog(CallLog callLog)
         {
-            
-                SuccessResult<AbstractCallLog> result = null;
-                result = abstractCallLogServices.CallLogUpsert(callLog);
-                if (result.Code == 200 && result.Item != null)
-                {
-                    TempData["openPopup"] = CommonHelper.ShowAlertMessageToastr(MessageType.success.ToString(), result.Message);
-                }
-                else
-                {
-                    TempData["openPopup"] = CommonHelper.ShowAlertMessageToastr(MessageType.warning.ToString(), result.Message);
-                }
+
+            SuccessResult<AbstractCallLog> result = null;
+            result = abstractCallLogServices.CallLogUpsert(callLog);
+            if (result.Code == 200 && result.Item != null)
+            {
+                TempData["openPopup"] = CommonHelper.ShowAlertMessageToastr(MessageType.success.ToString(), result.Message);
+            }
+            else
+            {
+                TempData["openPopup"] = CommonHelper.ShowAlertMessageToastr(MessageType.warning.ToString(), result.Message);
+            }
 
             return Json(result, JsonRequestBehavior.AllowGet);
         }
@@ -336,16 +336,16 @@ namespace CRMManagement.Controllers
         [ActionName(Actions.Opportunities_TasksDelete)]
         public JsonResult Opportunities_TasksDelete(int Id)
         {
-            
-                try
-                {
-                    var abstractSubAdmins = abstractOpportunities_TasksServices.Opportunities_TasksDelete(Id);
-                }
-                catch (Exception e)
-                {
-                    TempData["openPopup"] = CommonHelper.ShowAlertMessageToastr(MessageType.danger.ToString(), "Record is not deleted successfully because it refers to another table.");
-                }
-            
+
+            try
+            {
+                var abstractSubAdmins = abstractOpportunities_TasksServices.Opportunities_TasksDelete(Id);
+            }
+            catch (Exception e)
+            {
+                TempData["openPopup"] = CommonHelper.ShowAlertMessageToastr(MessageType.danger.ToString(), "Record is not deleted successfully because it refers to another table.");
+            }
+
             return Json(1, JsonRequestBehavior.AllowGet);
         }
 
@@ -353,16 +353,16 @@ namespace CRMManagement.Controllers
         [ActionName(Actions.CallLogDelete)]
         public JsonResult CallLogDelete(int Id)
         {
-            
-                try
-                {
-                    var abstractSubAdmins = abstractCallLogServices.CallLogDelete(Id);
-                }
-                catch (Exception e)
-                {
-                    TempData["openPopup"] = CommonHelper.ShowAlertMessageToastr(MessageType.danger.ToString(), "Record is not deleted successfully because it refers to another table.");
-                }
-            
+
+            try
+            {
+                var abstractSubAdmins = abstractCallLogServices.CallLogDelete(Id);
+            }
+            catch (Exception e)
+            {
+                TempData["openPopup"] = CommonHelper.ShowAlertMessageToastr(MessageType.danger.ToString(), "Record is not deleted successfully because it refers to another table.");
+            }
+
             return Json(1, JsonRequestBehavior.AllowGet);
         }
 
@@ -379,24 +379,25 @@ namespace CRMManagement.Controllers
                 string Email = ProjectSession.Email;
                 if (Email != "" && model != null)
                 {
-                    string Emailtext = "<p style='margin-left: 70px;'>You can see #TASK# Details Below.</p><h5 style='margin-left: 70px;'> Opportunity Name :- <span style='font-weight:bold'>#OPNAME#</span></h5><h5 style='margin-left: 70px;'> Assigned User Name :- <span style='font-weight:bold'>#ASSIGNUSRNAME#</span></h5><h5 style='margin-left: 70px;'> Opportunitie Task Name :- <span style='font-weight:bold'>#OPTASKNAME#</span></h5><h5 style='margin-left: 70px;'> Description :- <span style='font-weight:bold'>#Description#</span></h5><h5 style='margin-left: 70px;'> FollowedUp Date :- <span style='font-weight:bold'>#FollowedUpDate#</span></h5><h5 style='margin-left: 70px;'> Notes :- <span style='font-weight:bold'>#Notes#</span></h5>";
+                    string Emailtext = "<p style='margin-left: 70px;'>You can see #TASK# Details Below.</p><h5 style='margin-left: 70px;'> Opportunity Name :- <span style='font-weight:bold'>#OPNAME#</span></h5><h5 style='margin-left: 70px;'> Assigned User Name :- <span style='font-weight:bold'>#ASSIGNUSRNAME#</span></h5><h5 style='margin-left: 70px;'> Opportunity Task Name :- <span style='font-weight:bold'>#OPTASKNAME#</span></h5><h5 style='margin-left: 70px;'> Description :- <span style='font-weight:bold'>#Description#</span></h5><h5 style='margin-left: 70px;'> Follow Up Date :- <span style='font-weight:bold'>#FollowedUpDate#</span></h5><h5 style='margin-left: 70px;'> Notes :- <span style='font-weight:bold'>#Notes#</span></h5>";
                     string body = string.Empty;
 
                     using (StreamReader reader = new StreamReader(Server.MapPath("~/EmailTemplate/index.html")))
                     {
                         body = reader.ReadToEnd();
                     }
-                    Emailtext=Emailtext.Replace("#TASK#", "Opportunitie Task");
+                    Emailtext=Emailtext.Replace("#TASK#", "Opportunity Task");
                     Emailtext=Emailtext.Replace("#OPNAME#", model.OpportunityName);
                     Emailtext=Emailtext.Replace("#ASSIGNUSRNAME#", model.AssignedUserName);
                     Emailtext=Emailtext.Replace("#OPTASKNAME#", model.Name);
                     Emailtext=Emailtext.Replace("#Description#", model.Description);
                     Emailtext=Emailtext.Replace("#FollowedUpDate#", model.FollowupDate);
                     Emailtext=Emailtext.Replace("#Notes#", model.Notes);
-                    body = body.Replace("#TASK#", "Opportunitie Task");
+                    body = body.Replace("#TASK#", "Opportunity Task");
                     body = body.Replace("#USERNAME#", ProjectSession.UserName);
                     body = body.Replace("#MAINMESSAGE#", Emailtext);
-                    EmailHelper.Send(Email, "", "", "Opportunitie Task Details", body);
+                    System.Net.Mail.Attachment Attachment1 = EmailHelper.AddAttachment("CRM Task: " + model.Name, Emailtext, model.FollowupDate, model.FollowupDate);
+                    EmailHelper.Send1(Email, "", "","CRM Task: " + model.Name, body,  Attachment1);
                 }
             }
 

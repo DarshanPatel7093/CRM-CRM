@@ -78,13 +78,13 @@
     jQuery(document).ready(function () {
         $('#StartDate').datetimepicker({
             useCurrent: false, //Important! See issue #1075
-            format: 'DD/MM/YYYY',
-            defaultDate: new Date()
+            format: 'YYYY/MM/DD',
+            defaultDate: new Date(Date.now() - 365*3 * 24 * 60 * 60 * 1000)
         });
         $('#EndDate').datetimepicker({
             useCurrent: false, //Important! See issue #1075
-            format: 'DD/MM/YYYY',
-            defaultDate: new Date()
+            format: 'YYYY/MM/DD',
+            defaultDate: new Date(Date.now() +365*999 * 24 * 60 * 60 * 1000)
         });
         $("#StartDate").on("dp.change", function (e) {
             $('#EndDate').data("DateTimePicker").minDate(e.date);
@@ -92,7 +92,7 @@
         $("#EndDate").on("dp.change", function (e) {
             $('#StartDate').data("DateTimePicker").maxDate(e.date);
         });
-         if (@ProjectSession.OpportunitiesCompanyContactID > 0) {
+        if (@ProjectSession.OpportunitiesCompanyContactID > 0) {
              $("#CompanyContactId").val(@ProjectSession.OpportunitiesCompanyContactID);
         }
         if (@ProjectSession.OpportunitiesAssignedUserID > 0) {

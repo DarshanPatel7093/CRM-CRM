@@ -64,8 +64,8 @@ namespace CRMManagement.Data.V1
             param.Add("@Description", abstractProjects.Description, dbType: DbType.String, direction: ParameterDirection.Input);
             param.Add("@CompanyContactId", abstractProjects.CompanyContactId, dbType: DbType.Int32, direction: ParameterDirection.Input);
             param.Add("@StatusId", abstractProjects.StatusId, dbType: DbType.Int32, direction: ParameterDirection.Input);
-            param.Add("@StartDate", abstractProjects.StartDate, dbType: DbType.DateTime, direction: ParameterDirection.Input);
-            param.Add("@EndDate", abstractProjects.EndDate, dbType: DbType.DateTime, direction: ParameterDirection.Input);
+            param.Add("@StartDate", abstractProjects.StartDate, dbType: DbType.String, direction: ParameterDirection.Input);
+            param.Add("@EndDate", abstractProjects.EndDate, dbType: DbType.String, direction: ParameterDirection.Input);
             param.Add("@LoginUserId", ProjectSession.UserID, dbType: DbType.Int32, direction: ParameterDirection.Input);
             using (SqlConnection con = new SqlConnection(Configurations.ConnectionString))
             {

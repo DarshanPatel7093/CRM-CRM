@@ -31,7 +31,7 @@ namespace CRMManagement.Data.V1
             param.Add("@SortDirection", pageParam.SortDirection, dbType: DbType.String, direction: ParameterDirection.Input);
             param.Add("@DateType", DateType, dbType: DbType.Int32, direction: ParameterDirection.Input);
 
-            if (ProjectSession.AdminRoleID == 3)
+            if (ProjectSession.AdminRoleID != 1)
             {
                 param.Add("@AssignedUserId", ProjectSession.UserID, dbType: DbType.Int32, direction: ParameterDirection.Input);
             }
@@ -71,8 +71,8 @@ namespace CRMManagement.Data.V1
             param.Add("@WorkDescription", abstractProjectsTimeTracking.WorkDescription, dbType: DbType.String, direction: ParameterDirection.Input);
             param.Add("@ProjectId", abstractProjectsTimeTracking.ProjectId, dbType: DbType.Int32, direction: ParameterDirection.Input);
             param.Add("@AssignedUserId", abstractProjectsTimeTracking.AssignedUserId, dbType: DbType.Int32, direction: ParameterDirection.Input);
-            param.Add("@StartDate", abstractProjectsTimeTracking.StartDate, dbType: DbType.DateTime, direction: ParameterDirection.Input);
-            param.Add("@EndDate", abstractProjectsTimeTracking.EndDate, dbType: DbType.DateTime, direction: ParameterDirection.Input);
+            param.Add("@StartDate", abstractProjectsTimeTracking.StartDate, dbType: DbType.String, direction: ParameterDirection.Input);
+            param.Add("@EndDate", abstractProjectsTimeTracking.EndDate, dbType: DbType.String, direction: ParameterDirection.Input);
             param.Add("@TotalHrs", abstractProjectsTimeTracking.TotalHrs, dbType: DbType.Int32, direction: ParameterDirection.Input);
             param.Add("@LoginUserId", ProjectSession.UserID, dbType: DbType.Int32, direction: ParameterDirection.Input);
             using (SqlConnection con = new SqlConnection(Configurations.ConnectionString))

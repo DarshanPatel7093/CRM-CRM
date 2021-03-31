@@ -36,7 +36,7 @@ namespace CRMManagement.Common
         
         public static void LogError(string directory,Exception ex)
         {
-            string message = string.Format("Time: {0}", DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss tt"));
+            string message = string.Format("Time: {0}", DateTime.Now.ToString("yyyy/mm/DD hh:mm:ss tt"));
             message += Environment.NewLine;
             message += "-----------------------------------------------------------";
             message += Environment.NewLine;

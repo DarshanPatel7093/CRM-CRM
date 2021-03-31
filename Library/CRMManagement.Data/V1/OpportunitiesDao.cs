@@ -31,7 +31,7 @@ namespace CRMManagement.Data.V1
             param.Add("@SortDirection", pageParam.SortDirection, dbType: DbType.String, direction: ParameterDirection.Input);
             param.Add("@UserId", UserId, dbType: DbType.Int32, direction: ParameterDirection.Input);
             param.Add("@DateType", DateType, dbType: DbType.Int32, direction: ParameterDirection.Input);
-            if (ProjectSession.AdminRoleID == 3)
+            if (ProjectSession.AdminRoleID != 1)
             {
                 param.Add("@AssignedUserId", ProjectSession.UserID, dbType: DbType.Int32, direction: ParameterDirection.Input);
             }

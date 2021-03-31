@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.IO;
     using System.Linq;
     using System.Net.Mail;
@@ -188,5 +189,130 @@
                 return false;
             }
         }
+
+        public static bool Send1(string mailTo, string mailCC, string mailBCC, string subject, string body, System.Net.Mail.Attachment Attach1 )
+        {
+            Boolean issent = true;
+            string mailFrom;
+            mailFrom = Configurations.FromEmailAddress;
+            mailBCC = Configurations.BccEmailAddress;
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(mailFrom) && !string.IsNullOrWhiteSpace(mailTo))
+                {
+                    MailMessage mailMesg = new MailMessage();
+                    SmtpClient objSMTP = new SmtpClient();
+
+                    objSMTP.Host = Configurations.EmailHost;
+
+                    objSMTP.EnableSsl = Convert.ToBoolean(Configurations.EnableSsl);
+
+                    System.Net.NetworkCredential NetworkCred = new System.Net.NetworkCredential();
+
+                    NetworkCred.UserName = Configurations.EmailUserName; //reading from web.config  
+
+                    NetworkCred.Password = Configurations.EmailPassword; //reading from web.config  
+
+                    objSMTP.UseDefaultCredentials = true;
+
+                    objSMTP.Credentials = new System.Net.NetworkCredential(NetworkCred.UserName, NetworkCred.Password);
+
+                    objSMTP.Port = int.Parse(Configurations.Port);
+
+                    mailMesg.From = new System.Net.Mail.MailAddress(mailFrom);
+                    mailMesg.To.Add(mailTo);
+
+                    if (!string.IsNullOrEmpty(mailCC))
+                    {
+                        string[] mailCCArray = mailCC.Split(';');
+                        foreach (string email in mailCCArray)
+                        {
+                            mailMesg.CC.Add(email);
+                        }
+                    }
+
+                    if (!string.IsNullOrEmpty(mailBCC))
+                    {
+                        mailBCC = mailBCC.Replace(";", ",");
+                        mailMesg.Bcc.Add(mailBCC);
+                    }
+
+                    if (Attach1 != null)
+                    {
+                       mailMesg.Attachments.Add(Attach1);
+                    }
+
+                    mailMesg.Subject = subject;
+                    mailMesg.Body = body;
+                    mailMesg.IsBodyHtml = true;
+
+                    try
+                    {
+                        objSMTP.Send(mailMesg);
+                        issent = true;
+                        return issent;
+                    }
+                    catch (Exception ex)
+                    {
+                        mailMesg.Dispose();
+                        mailMesg = null;
+                        //CommonService.Log(e);
+                        issent = false;
+                        return issent;
+                    }
+                    finally
+                    {
+                        mailMesg.Dispose();
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+
+        }
+        public static  System.Net.Mail.Attachment AddAttachment(string DetailsSubject, string DetailsHTML, string BeginDate, string EndDate)
+        {
+            StringBuilder sb = new StringBuilder();
+            string DateFormat = "yyyyMMddTHHmmssZ";
+            string DateFormat2 = "MM/dd/yyyy HH:mm:ss";
+            string now = DateTime.Now.ToUniversalTime().ToString(DateFormat);
+
+            sb.AppendLine("BEGIN:VCALENDAR");
+            sb.AppendLine("PRODID:-//Compnay Inc//Product Application//EN");
+            sb.AppendLine("VERSION:2.0");
+            sb.AppendLine("METHOD:PUBLISH");
+                        
+            DateTime dtStart = DateTime.ParseExact(BeginDate, DateFormat2, CultureInfo.InvariantCulture).AddHours(9) ; //Convert.ToDateTime(BeginDate);
+            DateTime dtEnd = DateTime.ParseExact(EndDate, DateFormat2, CultureInfo.InvariantCulture).AddHours(9).AddMinutes(30) ; // Convert.ToDateTime(EndDate);
+
+            sb.AppendLine("BEGIN:VEVENT");
+                sb.AppendLine("DTSTART:" + dtStart.ToUniversalTime().ToString(DateFormat));
+                sb.AppendLine("DTEND:" + dtEnd.ToUniversalTime().ToString(DateFormat));
+                sb.AppendLine("DTSTAMP:" + now);
+                sb.AppendLine("UID:" + Guid.NewGuid());
+                sb.AppendLine("CREATED:" + now);
+                sb.AppendLine("X-ALT-DESC;FMTTYPE=text/html:" + DetailsHTML);
+                //sb.AppendLine("DESCRIPTION:" + res.Details);
+                sb.AppendLine("LAST-MODIFIED:" + now);
+                sb.AppendLine("LOCATION: N/A" );
+                sb.AppendLine("SEQUENCE:0");
+                sb.AppendLine("STATUS:CONFIRMED");
+                sb.AppendLine("SUMMARY: " + DetailsSubject);
+                sb.AppendLine("TRANSP:OPAQUE");
+                sb.AppendLine("END:VEVENT");
+            
+            sb.AppendLine("END:VCALENDAR");
+
+            var calendarBytes = Encoding.UTF8.GetBytes(sb.ToString());
+            MemoryStream ms = new MemoryStream(calendarBytes);
+            System.Net.Mail.Attachment attachment = new System.Net.Mail.Attachment(ms, "event.ics", "text/calendar");
+            return attachment; 
+        } 
     }
 }
