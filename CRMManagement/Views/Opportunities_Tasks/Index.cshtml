@@ -219,12 +219,12 @@
         $('#CallLogCallDate').datetimepicker({
             useCurrent: false, //Important! See issue #1075
             format: 'YYYY/MM/DD',
-            defaultDate: new Date(Date.now() - 365 * 3 * 24 * 60 * 60 * 1000)
+            defaultDate: new Date()
         });
         $('#CallLogFollowUpDate').datetimepicker({
             useCurrent: false, //Important! See issue #1075
             format: 'YYYY/MM/DD',
-            defaultDate: new Date(Date.now() - 365 * 3 * 24 * 60 * 60 * 1000)
+            defaultDate: new Date()
         });
 
         $("#StartDate").on("dp.change", function (e) {
@@ -329,7 +329,7 @@
                             appendstring += '<a title="Click to See Call Log" onclick="ActiveCallLogTab(' + Id + ')" id="TaskName_' + row["Id"] + '" >' + row["Name"] + '</a>&nbsp; ';
                             return appendstring;
                         },
-                        "orderable": false,
+                        "orderable": true,
                         "class": "action-icons"
                     },
                     { "title": "Description", "data": "Description", "orderable": true },
@@ -452,13 +452,8 @@
                         "render": function (data, type, row) {
                             var Id = "'" + btoa(row["Id"])+"'";
                             var appendstring = '';
-                            @*var url = "@Url.Action(Actions.Manage, Controllers.Opportunities_Tasks, new { Area = ""})";
-                            var url1 = "@Url.Action(Actions.SendEmail, Controllers.Opportunities_Tasks, new { Area = ""})";*@
-
                             appendstring += '<a title="Edit" onclick="SelectCallLogForEdit('+Id+')"> <img src="@Url.Content("~/Styles/img/edit.png")" alt="Edit" /></a>&nbsp; ';
                             appendstring += '<a  href="javascript:void(0);" onclick="CallLogDelete(' + row["Id"] + ')" title="Delete"  > <img src="@Url.Content("~/Styles/img/delete.png")" alt="Delete" /></a> ';
-                            //appendstring += '<a  href="' + url1 + "?Id=" + Id + '" title="Email"  > <span class="fa fa-envelope"></span></a>&nbsp; ';
-
                             return appendstring;
                         },
                         "orderable": false,
@@ -497,10 +492,6 @@
     function BuildSearchCriteria1() {
         try {
             var param = {};
-            debugger
-            //param["OpportunityId"] = $("#OpportunityId").val();
-            //param["AssignedUserId"] = $("#AssignedUserId").val();
-            //param["StatusId"] = $("#StatusId").val();
             param["StartDate"] = $("#CallLogStartDate").val();
             param["EndDate"] = $("#CallLogEndDate").val();
             param["TaskId"] = $("#TaskId").val();
