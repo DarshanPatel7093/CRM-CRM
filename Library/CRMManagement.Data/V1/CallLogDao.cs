@@ -105,7 +105,7 @@ namespace CRMManagement.Data.V1
             param.Add("@ContactName", AbstractCallLog.ContactName, dbType: DbType.String, direction: ParameterDirection.Input);
             param.Add("@Notes", AbstractCallLog.Notes, dbType: DbType.String, direction: ParameterDirection.Input);
             param.Add("@FollowUpDate", AbstractCallLog.FollowUpDate, dbType: DbType.String, direction: ParameterDirection.Input);
-            param.Add("@CreatedBy", AbstractCallLog.CreatedBy, dbType: DbType.Int32, direction: ParameterDirection.Input);
+            //param.Add("@CreatedBy", AbstractCallLog.CreatedBy, dbType: DbType.Int32, direction: ParameterDirection.Input);
             param.Add("@ModifiedBy", AbstractCallLog.ModifiedBy, dbType: DbType.Int32, direction: ParameterDirection.Input);
             param.Add("@TaskId", AbstractCallLog.TaskId, dbType: DbType.Int32, direction: ParameterDirection.Input);
             using (SqlConnection con = new SqlConnection(Configurations.ConnectionString))

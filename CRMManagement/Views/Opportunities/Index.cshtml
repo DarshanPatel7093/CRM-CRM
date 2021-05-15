@@ -84,7 +84,7 @@
         $('#EndDate').datetimepicker({
             useCurrent: false, //Important! See issue #1075
             format: 'YYYY/MM/DD',
-            defaultDate: new Date(Date.now() +365*999 * 24 * 60 * 60 * 1000)
+            defaultDate: new Date(Date.now() +365*979 * 24 * 60 * 60 * 1000)
         });
         $("#StartDate").on("dp.change", function (e) {
             $('#EndDate').data("DateTimePicker").minDate(e.date);
